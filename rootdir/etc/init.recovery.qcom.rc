@@ -1,0 +1,45 @@
+# Recovery-mode USB gadget bring-up for arcfox.
+#
+# Without this, recovery boots and renders but never enumerates on USB, so
+# `adb sideload` is impossible and there is no way to read any log off the
+# device.
+#
+# Two things are missing in recovery on a Qualcomm device, because vendor init
+# does not run there:
+#
+#   1. AOSP's generic recovery init.rc sets `sys.usb.configfs 0` in
+#      `on early-init`, and every USB action is gated on it. At 0 the legacy
+#      path runs (`/sys/class/android_usb/android0/enable`), and android_usb
+#      does not exist on GKI 6.1 -- the writes fail silently and no gadget is
+#      ever bound to a UDC.
+#   2. The dwc3 controller has to be switched to peripheral mode before the UDC
+#      will accept a gadget binding.
+#
+# Everything else -- creating /config/usb_gadget/g1, its functions, config and
+# the UDC bind -- is already handled by the generic init.rc once configfs=1, so
+# it is deliberately NOT duplicated here.
+#
+# Note the mode node is reached through the /sys/class/udc symlink rather than
+# /sys/bus/platform/devices/<soc>.ssusb/mode (which is how the stock Motorola
+# recovery does it). The udc path is labelled via the UDC class, whereas the
+# platform-device path needs a genfs_contexts entry that our sepolicy does not
+# have -- our recovery sepolicy is 777KB against stock's 1.5MB and carries none
+# of the vendor_sysfs_usb_* labels.
+#
+# Verified on the running device:
+#   ro.hardware           = qcom          (so this filename is correct)
+#   ro.boot.usbcontroller = a600000.dwc3  (matches the /sys/class/udc entry)
+#
+# Taken from LineageOS/android_device_motorola_sm8475-common (zeekr, Razr 40
+# Ultra), an officially supported Motorola foldable on the sibling platform.
+
+on init
+    setprop sys.usb.configfs 1
+
+on property:ro.boot.usbcontroller=*
+    setprop sys.usb.controller ${ro.boot.usbcontroller}
+    write /sys/class/udc/${ro.boot.usbcontroller}/device/../mode peripheral
+
+on fs
+    wait /dev/block/platform/soc/${ro.boot.bootdevice}
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice

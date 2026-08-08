@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!--
+    OUTER (cover) display, motorola arcfox (Razr 50 Ultra / Razr+ 2024).
+
+    local:4630947043778501764  port 132  1080x1272  density 360
+    "Built-in Screen", type INTERNAL on Android 16.
+
+    Worth noting: on Android 14 stock reported this panel as
+    name="HDMI Screen", type=EXTERNAL — a workaround for a framework without
+    real flip support. Android 16 classifies it as a genuine internal secondary
+    display. If this file is ever back-ported to a 22.x build, expect the
+    EXTERNAL classification to matter.
+
+    Flags observed in both versions: FLAG_PRESENTATION, FLAG_OWN_CONTENT_ONLY,
+    FLAG_OWN_DISPLAY_GROUP, FLAG_ALLOWED_TO_BE_DEFAULT_DISPLAY. It sits in
+    displayGroupId 1, layerStack 1. No cutout.
+
+    The canSetBrightnessViaHwc quirk is carried over from zeekr, which needed it
+    on its cover panel. UNVERIFIED on arcfox: if cover-display brightness
+    control misbehaves, this line is the first thing to try removing.
+-->
+<displayConfiguration>
+    <name>Outer Display</name>
+
+    <quirks>
+        <quirk>canSetBrightnessViaHwc</quirk>
+    </quirks>
+
+    <autoBrightness enabled="true">
+    </autoBrightness>
+
+    <densityMapping>
+        <density>
+            <width>1080</width>
+            <height>1272</height>
+            <density>360</density>
+        </density>
+    </densityMapping>
+</displayConfiguration>

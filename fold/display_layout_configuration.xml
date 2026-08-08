@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!--
+    Display layout for motorola arcfox (Razr 50 Ultra / Razr+ 2024).
+
+    AUTHORED, not adapted. Two reasons this file could not be copied from
+    anywhere:
+
+    1. Stock arcfox has NO /vendor/etc/displayconfig directory at all. Verified
+       on Android 16: `ls` fails and a find across /vendor /odm /product returns
+       nothing. Motorola routes the cover display through its own layer and
+       never uses AOSP's layout config, so there is no stock reference.
+
+    2. zeekr (Razr 40 Ultra) has one, but its display addresses are SHIFTED BY
+       ONE relative to arcfox:
+
+           zeekr    ...762 = inner    ...763 = outer
+           arcfox   ...763 = inner    ...764 = outer
+
+       Copying zeekr's file would set defaultDisplay to ...762, which does not
+       exist here, while simultaneously disabling ...763, which IS the inner
+       panel. Result: no valid default display and the main screen off, with
+       nothing in the log naming an address.
+
+    Addresses below were read off the device with `dumpsys display` on
+    Android 16 (W1UXS36H.72-45-10-7):
+
+        local:4630947043778501763   port 131   1080x2640   density 420   INNER
+        local:4630947043778501764   port 132   1080x1272   density 360   OUTER
+
+    State identifiers match fold/device_state_configuration.xml, which mirrors
+    Motorola's stock table. Primary-display assignment per state follows the
+    PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_{INNER,OUTER}_PRIMARY properties
+    that stock declares for each state.
+
+    NOTE: on Android 16 those properties may make this file redundant, since
+    DeviceStateManager can derive routing from them directly. Test with it, then
+    test without it, before assuming it is required. Stock ships without it.
+-->
+<layouts>
+    <!-- 0 CLOSED_HALL: lid shut. Outer panel is the only usable screen. -->
+    <layout>
+        <state>0</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501764</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501763</address>
+        </display>
+    </layout>
+
+    <!-- 1 CLOSED: lid reported open but hinge posture < 45. Outer primary. -->
+    <layout>
+        <state>1</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501764</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501763</address>
+        </display>
+    </layout>
+
+    <!-- 2 TENT: crease up, resting on both edges. Outer faces the user. -->
+    <layout>
+        <state>2</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501764</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501763</address>
+        </display>
+    </layout>
+
+    <!-- 3 HALF_OPENED_QVD: posture 45..90. Stock still treats this as outer. -->
+    <layout>
+        <state>3</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501764</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501763</address>
+        </display>
+    </layout>
+
+    <!-- 4 HALF_OPENED_MAIN: posture 90..180 exclusive. Inner takes over. -->
+    <layout>
+        <state>4</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501763</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501764</address>
+        </display>
+    </layout>
+
+    <!-- 5 OPENED: fully flat, posture exactly 180. -->
+    <layout>
+        <state>5</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501763</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501764</address>
+        </display>
+    </layout>
+
+    <!-- 6 OPENED_HALL: lid-switch fallback when posture is unavailable. -->
+    <layout>
+        <state>6</state>
+        <display enabled="true" defaultDisplay="true">
+            <address>4630947043778501763</address>
+        </display>
+        <display enabled="false">
+            <address>4630947043778501764</address>
+        </display>
+    </layout>
+</layouts>

@@ -1,0 +1,13 @@
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// Declares the device/motorola/arcfox Soong namespace.
+
+soong_namespace {
+    imports: [
+        "device/motorola/sm8635-common",
+        "vendor/motorola/sm8635-common",
+        "hardware/qcom-caf/sm8650",
+        "hardware/qcom-caf/wlan",
+    ],
+}

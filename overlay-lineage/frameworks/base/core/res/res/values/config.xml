@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Foldable framework config for motorola arcfox (Razr 50 Ultra / Razr+ 2024).
+
+    Why this file exists even though fold/device_state_configuration.xml already
+    declares PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_* and
+    PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_* per state:
+
+    Both mechanisms are live in LineageOS 23.2. The new properties are defined in
+    frameworks/base/core/java/android/hardware/devicestate/DeviceState.java, but
+    the legacy integer arrays below are still referenced across frameworks/base
+    (config_foldedDeviceStates in 22 files, config_halfFoldedDeviceStates in 6,
+    config_openDeviceStates in 8). Declaring only the properties leaves those
+    code paths reading empty arrays.
+
+    Identifiers map to fold/device_state_configuration.xml, which is Motorola's
+    own stock table:
+
+        0 CLOSED_HALL       lid shut                    OUTER primary
+        1 CLOSED            posture < 45                OUTER primary
+        2 TENT              posture <= 90, tent flag    OUTER primary
+        3 HALF_OPENED_QVD   posture 45..90              OUTER primary
+        4 HALF_OPENED_MAIN  posture 90..180 exclusive   INNER primary
+        5 OPENED            posture exactly 180         INNER primary
+        6 OPENED_HALL       lid-switch fallback         INNER primary
+
+    Grouping follows the FOLD_IN_CLOSED / FOLD_IN_HALF_OPEN / FOLD_IN_OPEN
+    property stock assigns to each state, so the two mechanisms agree.
+-->
+<resources>
+    <!-- States where the device presents as folded: cover display is primary.
+         Stock marks all four FOLD_IN_CLOSED + OUTER_PRIMARY. -->
+    <integer-array name="config_foldedDeviceStates">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </integer-array>
+
+    <!-- Half-opened. Only state 4 carries FOLD_IN_HALF_OPEN. Note this is the
+         state reached at posture 110, verified physically. -->
+    <integer-array name="config_halfFoldedDeviceStates">
+        <item>4</item>
+    </integer-array>
+
+    <!-- Open: inner display primary. 5 is posture-driven, 6 is the lid-switch
+         fallback when posture is unavailable. -->
+    <integer-array name="config_openDeviceStates">
+        <item>5</item>
+        <item>6</item>
+    </integer-array>
+
+    <!-- arcfox stock declares no rear-display state. zeekr's tree has a
+         REAR_DISPLAY_STATE with FLAG_EMULATED_ONLY; that is a zeekr construct,
+         not something arcfox hardware reports. Left empty deliberately. -->
+    <integer-array name="config_rearDisplayDeviceStates">
+    </integer-array>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!--
+    INNER display, motorola arcfox (Razr 50 Ultra / Razr+ 2024).
+
+    local:4630947043778501763  port 131  1080x2640  density 420
+    "Built-in Screen", type INTERNAL, refresh 24/30/60/90/120/165Hz.
+    Punch-hole cutout: M -45,0 L 45,0 L 45,108 L -45,108 Z
+
+    Filename encodes the display address and must match exactly. This is the
+    address arcfox uses for its INNER panel; on zeekr the same number is the
+    OUTER panel, so a copied file lands on the wrong screen.
+-->
+<displayConfiguration>
+    <name>Inner Display</name>
+
+    <autoBrightness enabled="true">
+    </autoBrightness>
+</displayConfiguration>

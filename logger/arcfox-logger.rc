@@ -1,0 +1,15 @@
+# Boot logger. Deliberately system-side: AOSP platform policy already provides a
+# domain for /system/bin, whereas our vendor binaries are the thing under
+# suspicion. Started as early as a shell is usable.
+service arcfox-logger /system/bin/sh /system/bin/arcfox-logger.sh
+    user root
+    group root system log
+    seclabel u:r:su:s0
+    oneshot
+    disabled
+
+on post-fs
+    start arcfox-logger
+
+on boot
+    start arcfox-logger

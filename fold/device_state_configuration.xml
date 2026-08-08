@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!--
+    Device states for motorola arcfox (Razr 50 Ultra / Razr+ 2024).
+
+    PROVENANCE: this is Motorola's own table, read verbatim off the device at
+    /vendor/etc/devicestate/device_state_configuration.xml on Android 16
+    (W1UXS36H.72-45-10-7). It is not adapted from another handset, and every
+    state below was reproduced physically and confirmed with `dumpsys
+    device_state`:
+
+        fully open, flat        -> 5 OPENED             posture 180.00, 0, 0
+        ~110 deg, hinge bottom  -> 4 HALF_OPENED_MAIN   posture 110.00, 0, 0
+        ~70 deg, crease UP      -> 2 TENT               posture  70.00, 1, 0
+        lid shut                -> 0 CLOSED_HALL        posture   0.00, 0, 0
+
+    DO NOT PORT zeekr's version of this file. It uses the pre-Android-15
+    <flags> schema (FLAG_APP_INACCESSIBLE, FLAG_CANCEL_OVERRIDE_REQUESTS,
+    FLAG_EMULATED_ONLY), which Android 16 replaced with <properties> and
+    com.android.server.policy.PROPERTY_* constants. It also reads the hall
+    sensor plus android.sensor.hinge_angle, where arcfox uses the lid-switch
+    (SW_LID on input device "MotFlip_LID") plus com.motorola.sensor.hinge_posture.
+
+    DO NOT RETUNE THE THRESHOLDS CASUALLY. hinge_posture does not report a
+    continuous angle. Sweeping the hinge slowly through its full range produces
+    only a sparse ladder of discrete values:
+
+        { 0, 70, 90, 110, 180 }
+
+    and a fast fold can skip rungs entirely (an observed closed-to-open motion
+    went 0 -> 90 -> 180). Every stock bucket below therefore contains one or two
+    reachable values, and HALF_OPENED_QVD [45,90) is reachable by exactly ONE
+    value: 70. Move a boundary by 25 degrees and that state becomes unreachable
+    dead config, with nothing in any log to tell you.
+
+    Note the DOUBLE SPACE in "Hinge Posture  Wakeup". DeviceStateManager matches
+    sensors on this name string exactly. It is not a typo.
+
+    value[0] is the angle. value[1] is an orientation flag: 1 in tent, 0
+    everywhere else, which is what separates TENT from HALF_OPENED_MAIN when
+    they share a hinge angle. value[2] read 0 in every position measured and its
+    meaning is unknown.
+-->
+<device-state-config>
+  <device-state>
+    <identifier>0</identifier>
+    <name>CLOSED_HALL</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_POLICY_CANCEL_OVERRIDE_REQUESTS</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>false</open>
+      </lid-switch>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>1</identifier>
+    <name>CLOSED</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+      <sensor>
+        <type>com.motorola.sensor.hinge_posture</type>
+        <name>Hinge Posture  Wakeup</name>
+        <value>
+          <min-inclusive>0</min-inclusive>
+          <max>45</max>
+        </value>
+        <value>
+          <max-inclusive>0</max-inclusive>
+        </value>
+        <value>
+          <max-inclusive>0</max-inclusive>
+        </value>
+      </sensor>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>2</identifier>
+    <name>TENT</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+      <sensor>
+        <type>com.motorola.sensor.hinge_posture</type>
+        <name>Hinge Posture  Wakeup</name>
+        <value>
+          <min-inclusive>0</min-inclusive>
+          <max-inclusive>90</max-inclusive>
+        </value>
+        <value>
+          <min-inclusive>1</min-inclusive>
+        </value>
+        <value>
+          <max-inclusive>0</max-inclusive>
+        </value>
+      </sensor>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>3</identifier>
+    <name>HALF_OPENED_QVD</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+      <sensor>
+        <type>com.motorola.sensor.hinge_posture</type>
+        <name>Hinge Posture  Wakeup</name>
+        <value>
+          <min-inclusive>45</min-inclusive>
+          <max>90</max>
+        </value>
+        <value>
+          <max-inclusive>0</max-inclusive>
+        </value>
+        <value>
+          <max-inclusive>0</max-inclusive>
+        </value>
+      </sensor>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>4</identifier>
+    <name>HALF_OPENED_MAIN</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+      <sensor>
+        <type>com.motorola.sensor.hinge_posture</type>
+        <name>Hinge Posture  Wakeup</name>
+        <value>
+          <min-inclusive>90</min-inclusive>
+          <max>180</max>
+        </value>
+        <value />
+        <value />
+      </sensor>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>5</identifier>
+    <name>OPENED</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_OPEN</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+      <sensor>
+        <type>com.motorola.sensor.hinge_posture</type>
+        <name>Hinge Posture  Wakeup</name>
+        <value>
+          <min-inclusive>90</min-inclusive>
+          <max-inclusive>180</max-inclusive>
+        </value>
+        <value />
+        <value />
+      </sensor>
+    </conditions>
+  </device-state>
+  <device-state>
+    <identifier>6</identifier>
+    <name>OPENED_HALL</name>
+    <properties>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_OPEN</property>
+      <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+    </properties>
+    <conditions>
+      <lid-switch>
+        <open>true</open>
+      </lid-switch>
+    </conditions>
+  </device-state>
+</device-state-config>
