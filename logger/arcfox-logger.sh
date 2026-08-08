@@ -124,6 +124,37 @@ while [ "$i" -lt 31 ]; do
         echo "--- init/service failures and SELinux denials (FULL) ---"
         logcat -b all -d 2>/dev/null | grep -iE \
             "init:|avc:|denied|keymint|qseecom|keystore|weaver|gatekeeper|strongbox|tee|vold|Service |crash|fatal|cannot |failed"
+        # --- process forensics --------------------------------------------
+        # keymint-qti is ALIVE and SILENT: three TimedRetryForwarder_release
+        # lines at 2.6s and then nothing for 90s, no crash, no denial, and it
+        # never reaches addService. Logs cannot say why, because it is not
+        # logging -- it is blocked. So ask the kernel instead: wchan/syscall/
+        # stack say where it is stuck, and /proc/PID/maps says which
+        # keymint-V*-ndk.so it actually loaded (the V3-vs-V4 question that the
+        # ELF alone cannot settle, since the ABI break is at runtime).
+        echo "--- process forensics: keymint / qseecomd / vold / keystore2 ---"
+        for p in $(ls /proc 2>/dev/null | grep -E '^[0-9]+$'); do
+            c=$(cat /proc/$p/cmdline 2>/dev/null | tr -d '\000')
+            case "$c" in
+                *keymint*|*qseecomd*|*vold*|*keystore2*|*qseecom@1.0*)
+                    echo "== pid $p  $c"
+                    echo "   state:   $(awk '/^State/{print $2,$3}' /proc/$p/status 2>/dev/null)"
+                    echo "   wchan:   $(cat /proc/$p/wchan 2>/dev/null)"
+                    echo "   syscall: $(cat /proc/$p/syscall 2>/dev/null)"
+                    echo "   threads:"
+                    for t in /proc/$p/task/*; do
+                        [ -d "$t" ] || continue
+                        echo "     tid $(basename $t) state=$(awk '/^State/{print $2}' $t/status 2>/dev/null) wchan=$(cat $t/wchan 2>/dev/null) syscall=$(cat $t/syscall 2>/dev/null | cut -d' ' -f1)"
+                    done
+                    echo "   kernel stack:"
+                    cat /proc/$p/stack 2>/dev/null | head -25
+                    echo "   security/AIDL libs mapped:"
+                    grep -oE '/[^ ]*(keymint|rkp|secureclock|sharedsecret|qtikeymint|QSEECom|tpa|ops)[^ ]*\.so' /proc/$p/maps 2>/dev/null | sort -u
+                    echo "   open fds:"
+                    ls -l /proc/$p/fd 2>/dev/null | sed 's/^.* -> /     -> /' | sort | uniq -c | head -25
+                    ;;
+            esac
+        done
         echo "--- FULL dmesg ---"
         dmesg 2>/dev/null
         echo "--- FULL logcat, everything ---"
