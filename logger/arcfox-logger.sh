@@ -157,8 +157,14 @@ while [ "$i" -lt 31 ]; do
         done
         echo "--- FULL dmesg ---"
         dmesg 2>/dev/null
-        echo "--- FULL logcat, everything ---"
-        logcat -b all -d 2>/dev/null
+        # The unfiltered logcat is TAILED, unlike the filtered section above.
+        # Once the boot got past late-fs the logs grew enough that snapshots
+        # from iteration 5 on hit the 4 MiB slot cap exactly and were cut off
+        # mid-file -- losing the END of each snapshot, which is the newest and
+        # most interesting part. The filtered section and dmesg are complete;
+        # this one only needs enough context around them.
+        echo "--- logcat, everything (last 4000 lines) ---"
+        logcat -b all -d 2>/dev/null | tail -4000
     } 2>/dev/null | head -c "$CAP" > "$T"
     dd if="$T" of="$P" bs=4096 seek="$(( SLOT * (i + 1) ))" conv=notrunc,sync 2>/dev/null
     [ "$(getprop sys.boot_completed 2>/dev/null)" = "1" ] && touch /dev/.arcfox_booted
