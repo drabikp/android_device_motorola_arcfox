@@ -37,10 +37,25 @@
 # "Too many pending control messages" repeats at 1Hz, so by the time a late
 # iteration runs, early boot has been overwritten. The EARLY snapshot is taken
 # at the first opportunity and never touched again, so it survives the flood.
-P=/dev/block/by-name/kpan
+# STORE: the `ramdump` partition, 128 MiB, verified all-zero (the whole 128 MiB
+# reads back as zeros, so nothing is being clobbered). kpan is only 8 MiB, which
+# forced every snapshot to be tailed -- and the tailing is what hid the original
+# root cause for two days. 128 MiB is enough to keep every sample in full.
+#
+# LAYOUT: fixed 4 MiB slots, so nothing can splice into anything else.
+#   slot 0        EARLY snapshot, written once, at the first opportunity
+#   slot 1+i      iteration i, written in full -- a TIMELINE, not just a last
+#                 sample. This is the point: a service can be alive and silent
+#                 for 90s (keymint-qti does exactly that) and only a series of
+#                 snapshots shows when it stops making progress.
+#
+# kpan is still written with the EARLY snapshot as a fallback, in case the
+# bootloader turns out to touch ramdump on some path we have not exercised.
+P=/dev/block/by-name/ramdump
+FALLBACK=/dev/block/by-name/kpan
 T=/dev/arcfox-log.txt
-HALF=1024                       # 1024 * 4096 = 4 MiB, the offset of LATE
-CAP=4000000                     # keep each snapshot under its 4 MiB slot
+SLOT=1024                       # 1024 * 4096 = 4 MiB per slot
+CAP=4000000                     # keep each snapshot inside its slot
 
 # After this many 5s iterations, give up and reboot to the BOOTLOADER. Without
 # this the phone sits alive-but-unreachable (no adb, no MTP, no reset) and every
@@ -50,9 +65,12 @@ CAP=4000000                     # keep each snapshot under its 4 MiB slot
 GIVE_UP_AFTER=18     # 18 * 5s = ~90s past post-fs (was 36; the cycle's
                      # monitor window is 400s and we must fire well inside it)
 
-# Zero the whole partition first, so nothing we read back can be a leftover of
-# an earlier boot. 8 MiB, costs well under a second.
-dd if=/dev/zero of="$P" bs=1M count=8 2>/dev/null
+# Zero both stores first, so nothing we read back can be a leftover of an
+# earlier boot. (This is not paranoia: `dd conv=notrunc` writes only as many
+# bytes as the input has, so a shorter record used to leave the previous,
+# longer one's tail in place and the harvested file was a splice of two boots.)
+dd if=/dev/zero of="$P" bs=1M count=128 2>/dev/null
+dd if=/dev/zero of="$FALLBACK" bs=1M count=8 2>/dev/null
 sync
 
 # Give logd as much room as we can. Default is small enough that early boot is
@@ -73,10 +91,13 @@ logcat -G 16M 2>/dev/null
     logcat -b all -d 2>/dev/null
 } 2>/dev/null | head -c "$CAP" > "$T"
 dd if="$T" of="$P" bs=4096 conv=notrunc,sync 2>/dev/null
+dd if="$T" of="$FALLBACK" bs=4096 conv=notrunc,sync 2>/dev/null
 sync
 
+# 128 MiB / 4 MiB = 32 slots; slot 0 is EARLY, so iterations 0..30 fit. Stop
+# there rather than dd'ing past the end of the partition.
 i=0
-while [ "$i" -lt 200 ]; do
+while [ "$i" -lt 31 ]; do
     if [ "$i" -ge "$GIVE_UP_AFTER" ] && [ ! -e /dev/.arcfox_booted ]; then
         # If the boot had completed, sys.boot_completed would be 1 and we would
         # not be here. Park in the bootloader so the host can collect the log.
@@ -93,19 +114,22 @@ while [ "$i" -lt 200 ]; do
         echo b > /proc/sysrq-trigger
         sleep 30
     fi
-    # --- LATE snapshot: rolling, written into the second half of kpan --------
+    # --- iteration snapshot, in full, into its own slot ---------------------
+    #
+    # Nothing here is tailed. `logcat -G 16M` keeps the whole boot in the
+    # buffer, and each iteration gets its own 4 MiB slot, so this is a complete
+    # record of every sample rather than a single surviving one.
     {
-        echo "===== arcfox LATE snapshot, iteration $i, uptime $(cat /proc/uptime 2>/dev/null) ====="
-        echo "--- init/service failures and SELinux denials ---"
+        echo "===== arcfox snapshot, iteration $i, uptime $(cat /proc/uptime 2>/dev/null) ====="
+        echo "--- init/service failures and SELinux denials (FULL) ---"
         logcat -b all -d 2>/dev/null | grep -iE \
-            "init:|avc:|denied|keymint|qseecom|keystore|weaver|gatekeeper|strongbox|tee|vold|Service |crash|fatal|cannot |failed" \
-            | tail -400
-        echo "--- last 200 lines of everything ---"
-        logcat -b all -d 2>/dev/null | tail -200
-        echo "--- dmesg tail ---"
-        dmesg 2>/dev/null | tail -200
+            "init:|avc:|denied|keymint|qseecom|keystore|weaver|gatekeeper|strongbox|tee|vold|Service |crash|fatal|cannot |failed"
+        echo "--- FULL dmesg ---"
+        dmesg 2>/dev/null
+        echo "--- FULL logcat, everything ---"
+        logcat -b all -d 2>/dev/null
     } 2>/dev/null | head -c "$CAP" > "$T"
-    dd if="$T" of="$P" bs=4096 seek="$HALF" conv=notrunc,sync 2>/dev/null
+    dd if="$T" of="$P" bs=4096 seek="$(( SLOT * (i + 1) ))" conv=notrunc,sync 2>/dev/null
     [ "$(getprop sys.boot_completed 2>/dev/null)" = "1" ] && touch /dev/.arcfox_booted
     sleep 5
     i=$((i + 1))
