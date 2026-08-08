@@ -45,6 +45,16 @@ lib_fixups: lib_fixups_user_type = {
 }
 
 blob_fixups: blob_fixups_user_type = {
+    # motorola.hardware.sensorext-service is the LAST stock blob still linking the
+    # platform's tinyxml2 11.0.0. It was built against 10.x, so it will smash its
+    # own stack in the XMLDocument constructor exactly as the display composer did
+    # (see sm8635-common/extract-files.py for the full analysis). It has been
+    # latent only because the service had no SELinux label and never started;
+    # sepolicy/vendor/file_contexts now labels it, so this must be fixed in the
+    # same change or the label just trades "won't start" for the crash.
+    # Motorola's own 10.x copy already ships as vendor/lib64/libtinyxml2_1.so.
+    'vendor/bin/hw/motorola.hardware.sensorext-service': blob_fixup()
+        .replace_needed('libtinyxml2.so', 'libtinyxml2_1.so'),
     # Motorola's camera stack links android.hardware.graphics.allocator V1,
     # but Android 16's libui pulls V2, and soong refuses a module that depends
     # on two versions of the same aidl_interface:

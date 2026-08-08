@@ -164,13 +164,7 @@ vendor/usr/idc/uinput-fpc.idc
 vendor/usr/keylayout/uinput-fpc.kl
 system/app/MotoSignatureApp/MotoSignatureApp.apk;PRESIGNED
 system/etc/permissions/com.motorola.motosignature.xml
-system/etc/permissions/moto-core_services.xml
-system/etc/permissions/moto-settings.xml
 system/framework/com.motorola.motosignature.jar
-system/framework/moto-core_services.jar
-system/framework/moto-settings.jar
-system_ext/bin/motsettings
-system_ext/priv-app/MotorolaSettingsProvider/MotorolaSettingsProvider.apk
 product/etc/permissions/com.motorola.moto-uirefresh.xml
 vendor/lib64/libsn220u_fw.so
 vendor/bin/hw/motorola.hardware.sensorext-service
@@ -321,3 +315,28 @@ vendor/lib64/hw/displaypanel.default.so
 vendor/lib64/motorola.hardware.camera.imgtuner.aidl-V1-ndk_platform.so
 vendor/lib64/panel_als_comp_filter_arcfox_cli.so
 vendor/lib64/panel_als_comp_filter_arcfox.so
+
+# --- MotorolaSettingsProvider REMOVED: it killed system_server ----------------
+# MotorolaSettingsProvider.apk declares sharedUserId=android.uid.system, so
+# ActivityManager's installSystemProviders() loads it INSIDE system_server. Its
+# onCreate calls ServiceManager.addService("motsettings"), and stock labels that
+# name in system_ext_service_contexts:
+#     motsettings   u:object_r:mot_system_service:s0
+# We ship no such label and no such type, so it falls to default_android_service,
+# which system_server may not `add`. Under enforcing that is a SecurityException
+# thrown out of onCreate:
+#     FATAL EXCEPTION IN SYSTEM PROCESS: main
+#     java.lang.RuntimeException: Unable to get provider
+#       com.motorola.android.providers.settings.MotorolaSettingsProvider
+#     Caused by: java.lang.SecurityException: SELinux denied for service.
+# system_server died this way 56 times; the boot never passed phase 100
+# (PHASE_WAIT_FOR_DEFAULT_DISPLAY) even though the display stack was healthy.
+#
+# Dropped rather than labelled. It is the ONLY app in the build with both
+# sharedUserId=android.uid.system and a <provider>, so removing it eliminates the
+# whole crash class; and running a Motorola framework provider inside a LineageOS
+# system_server is a standing source of crashes for no benefit. This is also
+# Motorola's app payload, which is the surface this ROM exists to remove.
+# The two jars, their permission XMLs and system_ext/bin/motsettings go with it:
+# nothing shipped declares <uses-library> on either jar and no init rc references
+# the script.
