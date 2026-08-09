@@ -103,4 +103,39 @@
          [0,0][0,0] in all four rotations, i.e. apps were drawing to the very
          bottom edge). -->
     <bool name="config_showNavigationBar">true</bool>
+
+    <!-- Default to GESTURE navigation rather than the 3-button bar.
+         Requested by the owner after config_showNavigationBar landed.
+
+         Turning the nav bar on exposed a second problem: with a bar finally
+         present, NavigationModeController actually ran and resolved the mode from
+         resources, and AOSP's default config_navBarInteractionMode is 0
+         (3 buttons). The stale navigation_mode=2 that had been sitting in
+         Settings.Secure meant nothing, because nothing had ever consumed it.
+
+         NavigationModeController.getCurrentInteractionMode() reads the RESOURCE
+         directly (NavigationModeController.java:169-171), not the setting, so
+         overriding it here takes effect immediately and does not depend on the 0
+         already stored in /data.
+
+         The block below is the full resource set from AOSP's
+         NavigationBarModeGesturalOverlay, copied rather than just the mode: that
+         overlay changes ten related values together, and taking only
+         config_navBarInteractionMode would leave an inconsistent config; most
+         visibly config_backGestureInset, which would stay at the 3-button default
+         and give a hard-to-grab back edge.
+
+         User choice is preserved: these are baked into framework-res, and a
+         runtime RRO takes precedence over a baked-in resource, so switching modes
+         in Settings still works. -->
+    <integer name="config_navBarInteractionMode">2</integer>
+    <bool name="config_navBarCanMove">false</bool>
+    <bool name="config_navBarTapThrough">true</bool>
+    <bool name="config_imeDrawsImeNavBar">true</bool>
+    <dimen name="config_backGestureInset">30dp</dimen>
+    <bool name="config_navBarNeedsScrim">false</bool>
+    <integer name="config_navBarOpacityMode">2</integer>
+    <bool name="config_allowSeamlessRotationDespiteNavBarMoving">true</bool>
+    <bool name="config_navBarAlwaysShowOnSideEdgeGesture">true</bool>
+    <bool name="config_attachNavBarToAppDuringTransition">true</bool>
 </resources>
