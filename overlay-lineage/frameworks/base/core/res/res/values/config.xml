@@ -73,4 +73,34 @@
          has to set this. Independent of the device-state machinery, so it holds
          even while the fold sensors are broken. -->
     <bool name="config_localDisplaysMirrorContent">false</bool>
+
+    <!-- THE BACK GESTURE. Without this there is no navigation bar at all, and
+         swiping in from the left edge does nothing.
+
+         AOSP defaults config_showNavigationBar to false (config.xml:2772) and
+         expects every device to override it; nothing in device/motorola/ did, and
+         qemu.hw.mainkeys is unset, so DisplayPolicy.mHasNavigationBar came out
+         false. NavigationBarControllerImpl then returns early from
+         canCreateNavBarOrTaskBar(), so EdgeBackGestureHandler.onNavBarAttached()
+         and onNavigationModeChanged() never run. Confirmed live on bc23:
+
+             mIsAttached=false   mIsGestureHandlingEnabled=false
+             mEdgeWidthLeft=78   mExcludeRegion=SkRegion()
+
+         Note what this rules out: the insets are correct (78 px each side, not
+         zero), navigation_mode is 2 (gestural), the gestural overlay is enabled
+         and the exclusion region is empty. Only the attach step was missing, and
+         dumpsys window confirms there is no navigationBars InsetsSource at all.
+
+         Recents keeps working because it never goes through SystemUI: Launcher3's
+         TouchInteractionService installs its own swipe-up gesture monitor spy
+         window (visible in dumpsys input as "swipe-up ... ownerPid=launcher3").
+         Back is SystemUI's EdgeBackGestureHandler, which was dead. That asymmetry
+         is what the bug looked like from the outside.
+
+         Expect after this lands: the gesture home pill appears for the first time,
+         and apps get a non-zero bottom navigationBars inset (nonDecorInsets was
+         [0,0][0,0] in all four rotations, i.e. apps were drawing to the very
+         bottom edge). -->
+    <bool name="config_showNavigationBar">true</bool>
 </resources>
