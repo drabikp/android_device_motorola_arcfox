@@ -10,6 +10,33 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit_only.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
+# BRING-UP ONLY -- REMOVE BEFORE ANY GENERAL RELEASE.
+#
+# WITH_ADB_INSECURE is LineageOS's own supported knob
+# (vendor/lineage/config/common.mk:33-43). On a userdebug build it does two things:
+#   ro.adb.secure=0   -- adb needs no key authorization
+#   skips PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG, so ro.debuggable=1 -> `adb root`
+#
+# Both are wanted while porting. adb kept lapsing to "unauthorized" after every
+# flash, and an unauthorized device refuses `reboot` as well as `shell`, so each
+# lapse cost a manual power-cycle -- the exact brake the USB fix was meant to
+# remove. The underlying cause is a real defect that this only masks:
+#   W AdbDebuggingManager: adbd_auth domain socket unavailable
+# so system_server cannot run the authorization handshake at all. Fix that and
+# this can go.
+#
+# ro.debuggable=1 additionally buys `adb root`, which makes sepolicy work, /data
+# and tombstone inspection, and property experiments possible without a reflash.
+#
+# It MUST be set before the inherit below: common.mk tests it with ifdef at parse
+# time, so setting it afterwards has no effect.
+#
+# Security note: this build has no adb key checking and allows adb root. That is
+# acceptable only because the device is a development target and is not being
+# daily-driven (owner's explicit decision, 2026-08-09). Delete this line the
+# moment that changes.
+WITH_ADB_INSECURE := true
+
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
