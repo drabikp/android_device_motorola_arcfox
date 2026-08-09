@@ -55,4 +55,22 @@
          not something arcfox hardware reports. Left empty deliberately. -->
     <integer-array name="config_rearDisplayDeviceStates">
     </integer-array>
+
+    <!-- The cover panel must own its content, not mirror the inner display.
+         AOSP defaults config_localDisplaysMirrorContent to true (config.xml:3433).
+         With it true, LocalDisplayAdapter.shouldOwnContentOnly() is false, so the
+         cover display never gets FLAG_OWN_CONTENT_ONLY, and
+         DisplayManagerService.getDisplayIdToMirror() then returns DEFAULT_DISPLAY,
+         and DisplayContent.setDisplayMirroring() starts a content-recording
+         session that paints the whole inner UI onto the cover panel.
+         That is what made the setup wizard, home screen and QS shade all appear on
+         the outer screen while the phone was OPEN. It was NOT device-state routing.
+         DisplayManager had correctly picked the inner panel as DEFAULT_DISPLAY
+         (local:4630947043778501763, layerStack 0, 1080x2640, 420dpi) and the cover
+         as non-default logical display 9. XML comments cannot contain a double
+         hyphen, hence the prose above avoids it.
+         Stock reports FLAG_OWN_CONTENT_ONLY on this panel; every multi-panel port
+         has to set this. Independent of the device-state machinery, so it holds
+         even while the fold sensors are broken. -->
+    <bool name="config_localDisplaysMirrorContent">false</bool>
 </resources>
