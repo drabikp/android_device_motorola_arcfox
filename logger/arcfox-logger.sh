@@ -82,6 +82,13 @@ logcat -G 16M 2>/dev/null
 # early_hal services (keymint among them) are started.
 {
     echo "===== arcfox EARLY snapshot, uptime $(cat /proc/uptime 2>/dev/null) ====="
+    # Record the boot state, do not merely test it. Without this line a cycle
+    # that ends with no fastboot and no self-reboot is UNFALSIFIABLE: bc14 and
+    # bc16 were both scored BOOTED purely because the host saw nothing, and
+    # neither can now be re-checked. See BOOTSTATE below in every iteration.
+    echo "BOOTSTATE sys.boot_completed=$(getprop sys.boot_completed 2>/dev/null)" \
+         "dev.bootcomplete=$(getprop dev.bootcomplete 2>/dev/null)" \
+         "init.svc.zygote=$(getprop init.svc.zygote 2>/dev/null)"
     echo "--- FULL dmesg (NOT tailed) ---"
     dmesg 2>/dev/null
     echo "--- FULL logcat, security/HAL chain, unfiltered by tail ---"
@@ -121,6 +128,10 @@ while [ "$i" -lt 31 ]; do
     # record of every sample rather than a single surviving one.
     {
         echo "===== arcfox snapshot, iteration $i, uptime $(cat /proc/uptime 2>/dev/null) ====="
+        echo "BOOTSTATE sys.boot_completed=$(getprop sys.boot_completed 2>/dev/null)" \
+             "dev.bootcomplete=$(getprop dev.bootcomplete 2>/dev/null)" \
+             "init.svc.zygote=$(getprop init.svc.zygote 2>/dev/null)" \
+             "give_up_at=$GIVE_UP_AFTER"
         echo "--- init/service failures and SELinux denials (FULL) ---"
         logcat -b all -d 2>/dev/null | grep -iE \
             "init:|avc:|denied|keymint|qseecom|keystore|weaver|gatekeeper|strongbox|tee|vold|Service |crash|fatal|cannot |failed"
