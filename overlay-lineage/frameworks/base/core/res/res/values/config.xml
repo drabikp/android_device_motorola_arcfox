@@ -138,4 +138,43 @@
     <bool name="config_allowSeamlessRotationDespiteNavBarMoving">true</bool>
     <bool name="config_navBarAlwaysShowOnSideEdgeGesture">true</bool>
     <bool name="config_attachNavBarToAppDuringTransition">true</bool>
+
+    <!-- DISPLAY SHAPE: rounded corners and the punch-hole camera.
+         =====================================================================
+         We shipped NONE of this, so the framework believed both panels were
+         perfect rectangles with no camera. Measured on the running device:
+
+             mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) ... }
+             mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft,
+                             radius=0, ...}, ... all four radius=0]}
+
+         Consequence is cosmetic but constant: SystemUI insets status-bar content
+         by the corner radius and around the cutout, so with both at zero the
+         clock is laid out into the physically rounded top-right corner and is
+         clipped by the glass.
+
+         Every value below is read out of Motorola's own arcfox overlay in the
+         W1UXS36H dump with aapt2, NOT guessed from the spec sheet or measured
+         off a photo:
+             product/overlay/framework-res__arcfox_g__auto_generated_rro_product.apk
+               dimen/rounded_corner_radius             100px
+               string/config_mainBuiltInDisplayCutout  "M -45,0 L 45,0 L 45,108 L -45,108 Z"
+               string/config_secondaryBuiltInDisplayCutout
+                                                       "@bottom M 0,0 L -495,0 L -495,-349 L 0,-349 Z @right"
+             vendor/overlay/MotoFrameworkResOverlayVendorCommon.apk
+               dimen/rounded_corner_radius             24dp   <- the GENERIC Moto
+                                                                 value; arcfox's
+                                                                 own 100px wins.
+
+         Note the units: these are px, not dp, and must stay px. The cutout spec
+         is in the same pixel space as the panel (1080x2640), and the radius is
+         paired with it. Converting to dp at 420dpi would shift both.
+
+         config_mainBuiltInDisplayCutout is centred on x=0 by convention: the
+         parser translates it to the top-centre of the display, so the -45..45
+         span is a 90px-wide hole, 108px tall. That is the inner panel's
+         punch-hole camera. -->
+    <dimen name="rounded_corner_radius">100px</dimen>
+    <string translatable="false" name="config_mainBuiltInDisplayCutout">M -45,0 L 45,0 L 45,108 L -45,108 Z</string>
+    <string translatable="false" name="config_secondaryBuiltInDisplayCutout">@bottom M 0,0 L -495,0 L -495,-349 L 0,-349 Z @right</string>
 </resources>

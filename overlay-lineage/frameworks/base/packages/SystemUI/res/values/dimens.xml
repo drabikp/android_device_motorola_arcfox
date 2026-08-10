@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SystemUI's own copy of the corner geometry for arcfox (Razr 50 Ultra).
+
+    SystemUI does NOT reuse the framework's rounded_corner_radius. It keeps its
+    own pair:
+
+      real_rounded_corner_radius     the radius it uses to draw the corner
+                                     overlay and to decide how far to inset
+                                     status-bar content
+      rounded_corner_content_padding the horizontal padding applied to the status
+                                     bar so text and icons clear the curve
+
+    With both left at the AOSP defaults, the framework-side fix in
+    core/res/.../config.xml is not enough on its own: the corners get reported
+    correctly but SystemUI still lays the clock out as if the panel were square.
+    That is why both files change together.
+
+    Values read with aapt2 from Motorola's own overlay in the W1UXS36H dump,
+    product/overlay/SystemUI__arcfox_g__auto_generated_rro_product.apk:
+
+        dimen/real_rounded_corner_radius        103px
+        dimen/rounded_corner_content_padding     27px
+
+    Note 103px here against 100px for the framework's rounded_corner_radius.
+    That 3px difference is Motorola's, not a transcription slip. SystemUI
+    deliberately draws its anti-aliased corner overlay very slightly proud of the
+    layout radius so no lit pixel survives at the edge of the curve. Do not
+    "correct" them to match.
+
+    Deliberately NOT copied from the same overlay yet, because each needs its own
+    verification and none of them is the reported bug:
+      * config_enableDisplayCutoutProtection / config_frontBuiltInDisplayCutoutProtection
+        (the camera-privacy ring drawn around the punch-hole)
+      * cli_status_bar_height and the cli_* family, which belong to the cover
+        display and are only meaningful once the cover panel is driven properly.
+-->
+<resources>
+    <dimen name="real_rounded_corner_radius">103px</dimen>
+    <dimen name="rounded_corner_content_padding">27px</dimen>
+</resources>
