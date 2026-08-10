@@ -43,6 +43,13 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/fold/display_id_4630947043778501763.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630947043778501763.xml \
     $(LOCAL_PATH)/fold/display_id_4630947043778501764.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630947043778501764.xml
 
+# Input device config for the cover-panel touchscreen. Binds it to the cover
+# display so its touches stop being injected into the inner UI; see the file's
+# own comment for the TouchInputMapper fallback that made that happen. Stock
+# ships the identical file at this path.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/idc/gdx_cli_0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/gdx_cli_0.idc
+
 # Hinge angle feature. arcfox exposes both android.sensor.hinge_angle and
 # Motorola's com.motorola.sensor.hinge_posture; this declares the standard one.
 PRODUCT_COPY_FILES += \
