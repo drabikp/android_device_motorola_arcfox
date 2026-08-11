@@ -316,6 +316,71 @@ vendor/lib64/motorola.hardware.camera.imgtuner.aidl-V1-ndk_platform.so
 vendor/lib64/panel_als_comp_filter_arcfox_cli.so
 vendor/lib64/panel_als_comp_filter_arcfox.so
 
+
+# --- Camera: components and EVA model data that were never extracted -------
+# Found by working back from CamX errors in a failed preview, one file per
+# error: com.qti.stats.awbr.so -> "Unable to load the algo library (awbr)";
+# com.qti.stats.afc.so -> "AFC Set Param Failed"; com.qti.hwcfg.{ife,bps,ipe}
+# -> "GetOEMFeatureTypeMask() Invalid pointer pHwCfgWrapper 0x0" on the live
+# IFE node; com.vidhance.node.* -> "Failed to query Vidhance IFE/IPE crop
+# vendor tag". vendor/etc/eva/* is the model data for the EVA face
+# detection/landmark backend, which had none of it.
+vendor/lib64/camera/components/com.arcsoft.node.objecttracking.so
+vendor/lib64/camera/components/com.arcsoft.node.pictraceraw.so
+vendor/lib64/camera/components/com.qti.hwcfg.bps.so
+vendor/lib64/camera/components/com.qti.hwcfg.ife.so
+vendor/lib64/camera/components/com.qti.hwcfg.ipe.so
+# vendor/lib64/camera/components/com.qti.node.depthprovider.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/com.qti.node.evadepth.so -- SEE NOTE BELOW
+vendor/lib64/camera/components/com.qti.node.evs.so
+# vendor/lib64/camera/components/com.qti.node.itofpreprocess.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/com.qti.node.seg.so -- SEE NOTE BELOW
+vendor/lib64/camera/components/com.qti.stats.afc.so
+vendor/lib64/camera/components/com.qti.stats.awbr.so
+vendor/lib64/camera/components/com.qti.stats.roimixerlib.so
+vendor/lib64/camera/components/com.qti.stats.roimixer.so
+# vendor/lib64/camera/components/com.vidhance.node.gme.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/com.vidhance.node.preview.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/com.vidhance.node.video.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/libcamxevainterface.so -- SEE NOTE BELOW
+# vendor/lib64/camera/components/libdepthmapwrapper_itof.so -- SEE NOTE BELOW
+
+# --- NOT SHIPPED: the nine components above that link graphics.allocator-V1 ----
+# Each of these DT_NEEDEDs android.hardware.graphics.allocator-V1-ndk while also
+# needing libcommonchiutils, which links V2. Soong refuses that outright --
+# "depends on multiple versions of the same aidl_interface" -- and emits no ninja
+# file at all, so the whole build dies. The 67 camera components we already ship
+# are unaffected: they use the HIDL allocator@4.0, not the AIDL interface.
+#
+# They are all optional enhancement nodes, and none is on the path to a preview:
+# EVA depth/segmentation, Vidhance EIS, and the iToF depth set. arcfox has no
+# iToF sensor at all -- nothing in /vendor/etc/camera mentions itof, in our build
+# or in the stock dump, and no other stock component references
+# libdepthmapwrapper_itof. Dropping them costs the Vidhance vendor tags and EVA
+# depth; it does not cost the preview.
+#
+# The camera-critical blobs are NOT here: the BITML v2 CDSP skels are in
+# sm8635-common, and the components that map to observed CamX errors
+# (com.qti.stats.awbr, com.qti.stats.afc, com.qti.hwcfg.{ife,bps,ipe}) are
+# shipped above and link no AIDL allocator.
+#
+# To ship them later, the version disagreement has to be resolved for real --
+# either a ;DISABLE_DEPS annotation once their runtime libs are confirmed present
+# on-device, or by aligning libcommonchiutils. Do not just re-add them.
+
+vendor/etc/eva/facedetection/bias.dat
+vendor/etc/eva/facedetection/weight.dat
+vendor/etc/eva/facelandmark/bias_1_1.dat
+vendor/etc/eva/facelandmark/bias_1_2.dat
+vendor/etc/eva/facelandmark/bias_2.dat
+vendor/etc/eva/facelandmark/bias_3_1.dat
+vendor/etc/eva/facelandmark/bias_3_2.dat
+vendor/etc/eva/facelandmark/weight_1_1.dat
+vendor/etc/eva/facelandmark/weight_1_2.dat
+vendor/etc/eva/facelandmark/weight_2.dat
+vendor/etc/eva/facelandmark/weight_3_1.dat
+vendor/etc/eva/facelandmark/weight_3_2.dat
+# vendor/etc/eva/itof/tuning_params_sensor_type_1.json -- iToF, no such sensor here
 # --- MotorolaSettingsProvider REMOVED: it killed system_server ----------------
 # MotorolaSettingsProvider.apk declares sharedUserId=android.uid.system, so
 # ActivityManager's installSystemProviders() loads it INSIDE system_server. Its
