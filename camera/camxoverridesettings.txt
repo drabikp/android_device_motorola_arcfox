@@ -1,0 +1,41 @@
+# CamX override settings — arcfox (motorola razr 50 ultra)
+#
+# WITHOUT THIS FILE VIDEO IS RECORDED UNSTABILISED. The IPE reports
+# `stabilizationtype 72` (SAT|MCTF, no EIS bit) and programs an identity ICA
+# warp, so nothing corrects for handshake. Measured on an unstabilised clip:
+# 6.5px mean inter-frame motion, 61 of 80 frames jumping >2px.
+#
+# Motorola stabilises video with Vidhance, not with QTI's EISv3 directly, and
+# CamX core here is built for it ("Deferring %fx zoom to Vidhance",
+# "VIDHANCE: Reducing IFE residual crop" in camera.qcom.sm8650.so). The three
+# com.vidhance.node.* components ship via proprietary-files.txt; these settings
+# are what actually cause an EIS usecase to be selected.
+#
+# Settings are matched by a hash of the key name, so plain name=value works and
+# casing is irrelevant. The file is read once per camera-provider start from
+# /vendor/etc/camera/ (libcamxsettingsmanager.so, camxoverridesettingsfile.cpp);
+# no reboot is needed to re-read it, only a provider restart.
+#
+# EISV2Enable / EISV3Enable / overrideForceEISSupport
+#   Enable the EIS algorithms and stop the HAL declining EIS support. With just
+#   these, an app that requests CONTROL_VIDEO_STABILIZATION_MODE_ON (1) gets
+#   EIS -- verified with Open Camera: stabilizationtype 10/12 (MCTF|EIS2 /
+#   MCTF|EIS3) and the Vidhance nodes instantiated.
+#
+# enableSATPreviewEISV2
+#   The one that matters for the default camera app. The HAL advertises
+#   PREVIEW_STABILIZATION (2) in android.control.availableVideoStabilizationModes,
+#   and LineageOS Aperture PREFERS it over ON -- but on the SAT (multi-camera)
+#   path mode 2 was never wired to EIS, so Aperture alone still got
+#   stabilizationtype 72. With this set, unmodified Aperture requesting mode 2
+#   gets stabilizationtype 10 and 61 Vidhance node instances.
+#   This is why NO app patch is needed. Do not "fix" this in Aperture instead --
+#   that forks a shared LineageOS app for one device and does nothing for
+#   third-party camera apps.
+#
+# Zoom during video recording was verified working with these settings, so the
+# SAT bit leaving the stabilization mask does not cost optical zoom in video.
+EISV2Enable=1
+EISV3Enable=1
+overrideForceEISSupport=1
+enableSATPreviewEISV2=1

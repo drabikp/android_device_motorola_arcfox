@@ -50,6 +50,15 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/idc/gdx_cli_0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/gdx_cli_0.idc
 
+# Video stabilisation. Without this the IPE runs with stabilizationtype 72
+# (SAT|MCTF, no EIS bit) and an identity warp, i.e. video is recorded
+# unstabilised. See the file's own comments for what each setting does and why
+# enableSATPreviewEISV2 is what lets the stock camera app benefit without an
+# app-side patch. Requires the com.vidhance.node.* components (see
+# proprietary-files.txt) -- requesting EIS without them kills the camera session.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/camera/camxoverridesettings.txt:$(TARGET_COPY_OUT_VENDOR)/etc/camera/camxoverridesettings.txt
+
 # Hinge angle feature. arcfox exposes both android.sensor.hinge_angle and
 # Motorola's com.motorola.sensor.hinge_posture; this declares the standard one.
 PRODUCT_COPY_FILES += \

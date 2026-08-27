@@ -339,13 +339,13 @@ vendor/lib64/camera/components/com.qti.stats.afc.so
 vendor/lib64/camera/components/com.qti.stats.awbr.so
 vendor/lib64/camera/components/com.qti.stats.roimixerlib.so
 vendor/lib64/camera/components/com.qti.stats.roimixer.so
-# vendor/lib64/camera/components/com.vidhance.node.gme.so -- SEE NOTE BELOW
-# vendor/lib64/camera/components/com.vidhance.node.preview.so -- SEE NOTE BELOW
-# vendor/lib64/camera/components/com.vidhance.node.video.so -- SEE NOTE BELOW
-# vendor/lib64/camera/components/libcamxevainterface.so -- SEE NOTE BELOW
+vendor/lib64/camera/components/com.vidhance.node.gme.so
+vendor/lib64/camera/components/com.vidhance.node.preview.so
+vendor/lib64/camera/components/com.vidhance.node.video.so
+vendor/lib64/camera/components/libcamxevainterface.so
 # vendor/lib64/camera/components/libdepthmapwrapper_itof.so -- SEE NOTE BELOW
 
-# --- NOT SHIPPED: the nine components above that link graphics.allocator-V1 ----
+# --- NOT SHIPPED: the five depth/iToF components above ------------------------
 # Each of these DT_NEEDEDs android.hardware.graphics.allocator-V1-ndk while also
 # needing libcommonchiutils, which links V2. Soong refuses that outright --
 # "depends on multiple versions of the same aidl_interface" -- and emits no ninja
@@ -364,9 +364,27 @@ vendor/lib64/camera/components/com.qti.stats.roimixer.so
 # (com.qti.stats.awbr, com.qti.stats.afc, com.qti.hwcfg.{ife,bps,ipe}) are
 # shipped above and link no AIDL allocator.
 #
-# To ship them later, the version disagreement has to be resolved for real --
-# either a ;DISABLE_DEPS annotation once their runtime libs are confirmed present
-# on-device, or by aligning libcommonchiutils. Do not just re-add them.
+# UPDATE 2026-08-24: FOUR OF THE ORIGINAL NINE NOW SHIP -- the three
+# com.vidhance.node.* and libcamxevainterface. The reasoning above was wrong on
+# two counts. First, the allocator conflict is exactly what extract-files.py's
+# replace_needed fixup rewrites; com.qti.node.eisv3.so has an identical
+# dependency shape and has been shipping all along because it is in that tuple.
+# A DT_NEEDED closure over the built vendor image confirms the allocator is their
+# only unsatisfied dependency. Second, "none is on the path to a preview" is true
+# but "Vidhance EIS" is not an optional enhancement here: Motorola stabilises
+# video with Vidhance, CamX core is built with it, and the usecase selector
+# references these nodes from 10+ pipeline tables. MEASURED: with video
+# stabilization requested, the EIS usecase is selected and then dies --
+#   camxchinodewrapper.cpp:138 Failed to load Chi interface for
+#                              com.vidhance.node.preview
+#   camxnodefactory.cpp:164    Node type 255 is not supported or created
+#   chxextensionmodule.cpp:7623 CreateUsecaseObject failed
+# -- taking the whole camera session down, and without it recorded video is
+# unstabilised (measured 6.5px mean inter-frame motion, 61/80 frames >2px).
+#
+# The five below stay out, and for them the original reasoning still holds: they
+# are the depth/iToF set and arcfox has no iToF sensor at all. Do not just
+# re-add those -- resolve the version disagreement for real first.
 
 vendor/etc/eva/facedetection/bias.dat
 vendor/etc/eva/facedetection/weight.dat
