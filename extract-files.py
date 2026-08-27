@@ -131,6 +131,23 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/libopestriping.so',
         'vendor/lib64/libtfestriping.so',
         'vendor/lib64/libubifocus.so',
+        # Vidhance is Motorola's video stabiliser on arcfox, and CamX core here is
+        # built with it (camera.qcom.sm8650.so: "Deferring %fx zoom to Vidhance",
+        # "VIDHANCE: Reducing IFE residual crop"). These three CHI nodes carry the
+        # EISv3 node inside them; without them the EIS usecase cannot be created:
+        #   camxchinodewrapper.cpp:138 Failed to load Chi interface for
+        #                              com.vidhance.node.preview
+        #   camxnodefactory.cpp:164    Node type 255 is not supported or created
+        #   chxextensionmodule.cpp:7623 CreateUsecaseObject failed  -> black camera
+        # They were excluded for the allocator V1/V2 conflict, but that is exactly
+        # what this fixup rewrites -- com.qti.node.eisv3.so has an identical
+        # dependency shape and ships fine because it is already in this tuple. A
+        # DT_NEEDED closure over the built vendor image shows the allocator is
+        # their ONLY unsatisfied dependency.
+        'vendor/lib64/camera/components/com.vidhance.node.gme.so',
+        'vendor/lib64/camera/components/com.vidhance.node.preview.so',
+        'vendor/lib64/camera/components/com.vidhance.node.video.so',
+        'vendor/lib64/camera/components/libcamxevainterface.so',
         'vendor/lib64/vendor.qti.hardware.camera.aon-service-impl.so',
         'vendor/lib64/vendor.qti.hardware.camera.offlinecamera-service-impl.so',
         'vendor/lib64/vendor.qti.hardware.camera.postproc@1.0-service-impl.so',
