@@ -93,25 +93,64 @@ blob_fixups: blob_fixups_user_type = {
     # blobs. The 70 entries below were found by scanning the extracted blobs
     # for the V1 soname, not copied from another device.
     #
-    # KEPT DELIBERATELY, and it does NOT contradict this project's "ship the
-    # library version the blob wants, never relink the blob" rule. That rule is
-    # about UNSTABLE C++ ABIs, where a version bump moves struct offsets -- exactly
-    # what the tinyxml2 note above describes. Two measurements say this is the
-    # opposite case:
+    # ⚠️ RATIONALE CORRECTED 2026-09-01 after an independent review.
     #
-    #   1. These blobs import ZERO symbols from the allocator library. Checked over
-    #      the stock originals of every path listed below: the V1 soname appears in
-    #      DT_NEEDED and in no UND entry. It is a build-graph artifact of QC's link
-    #      line, not a call surface, so there is no ABI to mismatch.
-    #   2. android.hardware.graphics.allocator is a STABLE AIDL interface. Versions
-    #      are additive by construction, and the V2 -ndk library exports all 44
-    #      allocator symbols; none of the blobs' imports are missing from it
-    #      (vacuously, given 1).
+    # This block previously claimed the rewrite is harmless because "these blobs
+    # import ZERO symbols from the allocator library". THAT WAS WRONG, and it was
+    # wrong because the check behind it only sampled vendor/lib64/camera/* and
+    # then generalised. The scope was also understated: 74 paths here plus 53 in
+    # sm8635-common, 101 in total.
     #
-    # Shipping V1 alongside is not an option -- that is the soong error above.
-    # Removing the DT_NEEDED outright would also work and is arguably tidier, but it
-    # is a larger change to 74 blobs with no measurable benefit over the rewrite,
-    # which is already verified working (camera and video recording both pass).
+    # ⚠️ ONE BLOB IS DELIBERATELY EXCLUDED from this rewrite:
+    #
+    #   vendor/bin/hw/vendor.qti.hardware.display.allocator-service
+    #
+    # It is the gralloc allocator SERVER and it INHERITS THE VTABLE --
+    # `llvm-nm -D -u` shows five BnAllocator symbols (createBinder,
+    # getInterfaceVersion, getInterfaceHash, C2Ev, D2Ev) plus
+    # IAllocator::descriptor. That is the fatal case. It links V1 only and it
+    # already carries ;DISABLE_DEPS in proprietary-files.txt, so excluding it
+    # costs nothing.
+    #
+    # ⚠️ Three OTHER blobs also import from the allocator library and are
+    # deliberately LEFT IN the rewrite -- com.qti.chi.override.so,
+    # libcamximageformatutils.so and libchifeature2.so. Their only import is the
+    # STATIC helper IAllocator::fromBinder, whose mangled name is identical in V1
+    # and V2 and whose descriptor string is version-independent; no vtable is
+    # involved, so the layout hazard below does not apply to them. They also link
+    # BOTH V1 and V2 natively, and they do NOT carry ;DISABLE_DEPS -- restoring
+    # them reintroduces exactly the soong "multiple versions of the same
+    # aidl_interface" error this rewrite exists to prevent. Import count alone is
+    # NOT the test; ask whether the blob inherits a Bn* vtable.
+    #
+    # Stable AIDL is source- and
+    # transaction-compatible, but it is NOT vtable-compatible: V2 adds allocate2,
+    # isSupported and getIMapperLibrarySuffix, so BnAllocator grows from 10 slots
+    # to 13 and V2's _aidl_onTransact dispatches transaction 4 one slot past the
+    # end of a V1 object.
+    #
+    # Rewriting the SERVER made a V1 binary answer getInterfaceVersion() == 2.
+    # frameworks/native/libs/ui/Gralloc5.cpp sets kIAllocatorMinimumVersion = 2,
+    # so libui stopped taking its clean Gralloc4 fallback and every process that
+    # touches GraphicBufferMapper logged
+    #   E Gralloc5: Failed to get IMapper library suffix
+    # -- measured live on the device, with
+    #   service call ...IAllocator/default 16777215 -> Parcel(00000002)
+    # from a V1 implementation. It survived only because the out-of-bounds
+    # dispatch happened to return a failure.
+    #
+    # These four keep their original V1 soname and we INSTALL V1 alongside V2:
+    # android.hardware.graphics.allocator-V1-ndk is frozen upstream
+    # (hardware/interfaces/graphics/allocator/aidl/Android.bp), its vendor variant
+    # was already being built in out/soong, and stock ships it in vendor/lib64.
+    # Different MODULES depending on different versions is fine; the soong error
+    # this rewrite exists to avoid is one module depending on two.
+    #
+    # For the ~97 blobs that remain in this list the rewrite IS defensible: they
+    # carry the V1 soname in DT_NEEDED and import nothing from it, so there is no
+    # ABI surface to mismatch. Verify with `llvm-nm -D -u <blob> | grep
+    # graphics9allocator` before adding anything new here -- an empty result is
+    # the whole licence for rewriting a blob's DT_NEEDED.
     (
         'vendor/lib64/camera/com.mot.eeprom.mot_gt24p64e_ov32b40_eeprom.so',
         'vendor/lib64/camera/com.qti.ois.mot_dw9784.so',
