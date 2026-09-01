@@ -92,6 +92,26 @@ blob_fixups: blob_fixups_user_type = {
     # Rewrite the DT_NEEDED entry to V2. Same fix peridot applies to its camera
     # blobs. The 70 entries below were found by scanning the extracted blobs
     # for the V1 soname, not copied from another device.
+    #
+    # KEPT DELIBERATELY, and it does NOT contradict this project's "ship the
+    # library version the blob wants, never relink the blob" rule. That rule is
+    # about UNSTABLE C++ ABIs, where a version bump moves struct offsets -- exactly
+    # what the tinyxml2 note above describes. Two measurements say this is the
+    # opposite case:
+    #
+    #   1. These blobs import ZERO symbols from the allocator library. Checked over
+    #      the stock originals of every path listed below: the V1 soname appears in
+    #      DT_NEEDED and in no UND entry. It is a build-graph artifact of QC's link
+    #      line, not a call surface, so there is no ABI to mismatch.
+    #   2. android.hardware.graphics.allocator is a STABLE AIDL interface. Versions
+    #      are additive by construction, and the V2 -ndk library exports all 44
+    #      allocator symbols; none of the blobs' imports are missing from it
+    #      (vacuously, given 1).
+    #
+    # Shipping V1 alongside is not an option -- that is the soong error above.
+    # Removing the DT_NEEDED outright would also work and is arguably tidier, but it
+    # is a larger change to 74 blobs with no measurable benefit over the rewrite,
+    # which is already verified working (camera and video recording both pass).
     (
         'vendor/lib64/camera/com.mot.eeprom.mot_gt24p64e_ov32b40_eeprom.so',
         'vendor/lib64/camera/com.qti.ois.mot_dw9784.so',
