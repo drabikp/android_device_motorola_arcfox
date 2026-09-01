@@ -234,6 +234,20 @@ vendor/firmware/csot_goodix_cfg_group.bin
 vendor/firmware/csot_goodix_test_limits_255.csv
 
 # --- Tier 2: arcfox hardware zeekr never had (camera/sensor tuning, panel, touch)
+
+# --- DEAD .rc FILES DROPPED 2026-09-01 ---------------------------------------
+# The four init .rc files that used to sit alongside these binaries are gone:
+#   com.motorola.hardware.display.panel-service.rc
+#   com.motorola.hardware.display.touch-service.rc
+#   com.motorola.hardware.display.touch@1.2-service.rc
+#   motorola.hardware.camera.imgtuner.aidl-service.rc
+# None of their services could ever start -- the binaries carry the generic
+# u:object_r:vendor_file:s0 label, so init refuses the domain transition, once
+# per service per boot. Nothing on the device requests the interfaces they
+# would serve; the display, touch and camera stacks all work through the
+# AOSP/QCOM paths. Full reasoning, and why the binaries stay, in the
+# "DEAD .rc FILES DROPPED" block in
+# device/motorola/sm8635-common/proprietary-files.txt.
 vendor/bin/hw/com.motorola.hardware.display.panel-service
 vendor/bin/hw/com.motorola.hardware.display.touch-service
 vendor/bin/hw/com.motorola.hardware.display.touch@1.2-service
@@ -243,10 +257,6 @@ vendor/etc/camera/aec_golden_tele.bin
 vendor/etc/camera/anc_1080p.bin
 vendor/etc/camera/anc_4k.bin
 vendor/etc/camera/dual_golden_tele.bin
-vendor/etc/init/com.motorola.hardware.display.panel-service.rc
-vendor/etc/init/com.motorola.hardware.display.touch-service.rc
-vendor/etc/init/com.motorola.hardware.display.touch@1.2-service.rc
-vendor/etc/init/motorola.hardware.camera.imgtuner.aidl-service.rc
 vendor/etc/media_codecs_google_telephony.xml
 vendor/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml
 vendor/etc/permissions/noRil/apq_excluded_telephony_features.xml
@@ -279,9 +289,6 @@ vendor/etc/sensors/config/stk3bfx_1_evt3.json
 vendor/etc/sensors/config/stk3bfx_1.json
 vendor/etc/sensors/config/stk3bfx_1_tianma_always.json
 vendor/etc/sensors/hals.conf
-vendor/etc/vintf/manifest/com.motorola.hardware.display.panel-service.xml
-vendor/etc/vintf/manifest/com.motorola.hardware.display.touch.xml
-vendor/etc/vintf/manifest/motorola.hardware.camera.imgtuner.aidl.xml
 vendor/firmware/CAMERA_ICP.b00
 vendor/firmware/CAMERA_ICP.b01
 vendor/firmware/CAMERA_ICP.b02
