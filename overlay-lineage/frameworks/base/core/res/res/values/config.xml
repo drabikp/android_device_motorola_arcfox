@@ -177,4 +177,39 @@
     <dimen name="rounded_corner_radius">100px</dimen>
     <string translatable="false" name="config_mainBuiltInDisplayCutout">M -45,0 L 45,0 L 45,108 L -45,108 Z</string>
     <string translatable="false" name="config_secondaryBuiltInDisplayCutout">@bottom M 0,0 L -495,0 L -495,-349 L 0,-349 Z @right</string>
+
+    <!-- arcfox: per-display resource index. This array is the ONLY index source
+         DisplayUtils.getDisplayUniqueIdConfigIndex() uses; without it it returns
+         -1 and BOTH DisplayCutout and RoundedCorners fall back to the MAIN
+         panel's values for every display. Measured consequence: the 1080x1272
+         cover panel was being given the inner panel's top-centre punch-hole
+         (Rect(495,0-585,108)) and its 100px corner radius, neither of which it
+         physically has. It also made config_secondaryBuiltInDisplayCutout below
+         dead config: that string is only reachable as index 1.
+         Index 0 = inner (port 131), index 1 = outer (port 132).
+         Values taken verbatim from Motorola's own arcfox RRO. -->
+    <string-array name="config_displayUniqueIdArray" translatable="false">
+        <item>local:4630947043778501763</item>
+        <item>local:4630947043778501764</item>
+    </string-array>
+
+    <!-- arcfox: hinge/crease line for Jetpack WindowManager. Full 1080 width at
+         y=1320, the midpoint of the 2640-tall inner panel. Without it apps get
+         no FoldingFeature and cannot lay out around the crease. Matches stock. -->
+    <string name="config_display_features" translatable="false">fold-[0,1320,1080,1320]</string>
+
+    <!-- arcfox: device-state -> posture map, read by SystemUI
+         DevicePostureControllerImpl, WM Shell DevicePostureController and
+         Jetpack DeviceStateManagerFoldingFeatureProducer. Empty means every
+         state resolves to DEVICE_POSTURE_UNKNOWN. Maps our seven states:
+         0-3 closed, 4 half-opened, 5-6 opened. Matches stock. -->
+    <string-array name="config_device_state_postures" translatable="false">
+        <item>0:1</item>
+        <item>1:1</item>
+        <item>2:1</item>
+        <item>3:1</item>
+        <item>4:2</item>
+        <item>5:3</item>
+        <item>6:3</item>
+    </string-array>
 </resources>
