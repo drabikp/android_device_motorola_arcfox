@@ -45,16 +45,45 @@ lib_fixups: lib_fixups_user_type = {
 }
 
 blob_fixups: blob_fixups_user_type = {
-    # motorola.hardware.sensorext-service is the LAST stock blob still linking the
-    # platform's tinyxml2 11.0.0. It was built against 10.x, so it will smash its
-    # own stack in the XMLDocument constructor exactly as the display composer did
-    # (see sm8635-common/extract-files.py for the full analysis). It has been
-    # latent only because the service had no SELinux label and never started;
-    # sepolicy/vendor/file_contexts now labels it, so this must be fixed in the
-    # same change or the label just trades "won't start" for the crash.
-    # Motorola's own 10.x copy already ships as vendor/lib64/libtinyxml2_1.so.
-    'vendor/bin/hw/motorola.hardware.sensorext-service': blob_fixup()
-        .replace_needed('libtinyxml2.so', 'libtinyxml2_1.so'),
+    # --- NO tinyxml2 FIXUP FOR motorola.hardware.sensorext-service --------------
+    # ⚠️ There used to be a .replace_needed('libtinyxml2.so', 'libtinyxml2_1.so')
+    # here. It was WRONG for this blob and it made the service SIGABRT four times
+    # on every boot. Do not put it back. Measured 2026-09-01:
+    #
+    # The removed comment asserted "it was built against 10.x". That is false for
+    # THIS binary -- it is built against 11.x. The offset of
+    # tinyxml2::XMLElement::_rootAttribute is the discriminator, read straight out
+    # of XMLElement::FindAttribute() in each library:
+    #
+    #   vendor/lib64/libtinyxml2_1.so   (10.x)  ldr x19, [x0, #0x68]
+    #   system/lib64/libtinyxml2.so     (11.x)  ldr x19, [x0, #0x70]
+    #
+    # and the crashing instruction inside SensorExt::initAlsComp is
+    #
+    #   93 9c:  ldr x21, [x27, #0x70]     <- 11.x layout
+    #   93 b4:  bl  __cfi_slowpath        <- checks x21's vtable, ABORTS
+    #
+    # Pointed at the 10.x library the blob reads _rootAttribute from a member that
+    # is something else in that layout, hands the resulting non-object to
+    # cross-DSO CFI, and libtinyxml2_1.so's __cfi_check aborts. The tombstone is
+    # abort <- libtinyxml2_1.so <- SensorExt::initAlsComp <- ISensorExt_onTransact,
+    # i.e. it dies servicing a binder call, so init restarts it, the caller retries,
+    # and it settles only once the caller gives up -- which is why the service looks
+    # alive afterwards while ALS compensation never initialises.
+    #
+    # ⚠️ The other justification in that comment was also wrong: it claimed stock's
+    # vendor/lib64/libtinyxml2.so is a SYMLINK to libtinyxml2_1.so that extract_utils
+    # drops. There is no such symlink in the W1UXS36H dump, and symlinks ARE
+    # preserved there (vendor/lib64 has three: libEGL_adreno, libGLESv2_adreno,
+    # libq3dtools_adreno). Unmodified, the blob binds the 11.x
+    # vendor/lib64/libtinyxml2.so we already install -- AOSP's libtinyxml2 is
+    # vendor_available and its symbol set is IDENTICAL to stock's
+    # system/lib64/libtinyxml2.so (222 tinyxml2 symbols each; the 10.x _1 copy has
+    # 190 and is missing the Unsigned64*/ChildElementCount/DeepCopy/ErrorStr APIs).
+    #
+    # The sm8635-common fixup is a DIFFERENT case and stays: those display blobs
+    # really are 10.x. Before adding any blob to it, run the 0x68-vs-0x70 test above
+    # on that blob rather than assuming the whole vendor image was built alike.
     # Motorola's camera stack links android.hardware.graphics.allocator V1,
     # but Android 16's libui pulls V2, and soong refuses a module that depends
     # on two versions of the same aidl_interface:
