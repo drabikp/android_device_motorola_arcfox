@@ -131,20 +131,5 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
-# --- Boot logger (DIAGNOSTIC — remove before publishing) ---------------------
-# This device has no obtainable kernel log: ramoops is zeroed by the bootloader
-# every boot, /proc/last_kmsg is absent, kpan/ramdump are empty and
-# androidboot.console=0. The bootloader's own logfs log stops at the kernel
-# handoff, so everything after that has been invisible all session.
-#
-# The failure is a SOFTWARE reset -- the bootloader reports "PM: Reset by
-# PSHOLD", WARM_RESET_REASON1 "SOFT" -- about 328s in, which means init runs for
-# minutes before giving up. So a userspace logger works where every kernel-level
-# approach failed. It writes to the raw `kpan` partition, deliberately not a
-# filesystem, because /data and /metadata are themselves suspect.
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/logger/arcfox-logger.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/arcfox-logger.sh \
-    $(LOCAL_PATH)/logger/arcfox-logger.rc:$(TARGET_COPY_OUT_SYSTEM)/etc/init/arcfox-logger.rc
-
 # --- Blobs ------------------------------------------------------------------
 $(call inherit-product-if-exists, vendor/motorola/arcfox/arcfox-vendor.mk)
