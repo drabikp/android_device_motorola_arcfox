@@ -176,7 +176,26 @@
          punch-hole camera. -->
     <dimen name="rounded_corner_radius">100px</dimen>
     <string translatable="false" name="config_mainBuiltInDisplayCutout">M -45,0 L 45,0 L 45,108 L -45,108 Z</string>
-    <string translatable="false" name="config_secondaryBuiltInDisplayCutout">@bottom M 0,0 L -495,0 L -495,-349 L 0,-349 Z @right</string>
+    <!-- arcfox cover panel: the camera block is deliberately NOT declared as a
+         cutout. Stock's overlay declares it ("@bottom M 0,0 L -495,0 L -495,-349
+         L 0,-349 Z @right", 495x349 px at the bottom right), but stock only gets
+         away with that because Motorola's framework carries private cover-display
+         patches (a 48dp cover nav bar, config_cli_display_cutout_camera_height,
+         per-package padding lists) that lay content around the cameras. AOSP has
+         none of that: a bottom-edge cutout becomes a full-width 349px safe inset,
+         Launcher3's taskbar reports its navigation inset as max(bar, cutout) =
+         349px, and apps that pad by systemBars|displayCutout (Settings, every
+         edge-to-edge app) end their content and scroll views at y=923. Measured
+         2026-09-10/13: the bottom 27% of the panel was dead for scrolling, even on
+         the good glass left of the cameras. Reviewed independently: no
+         system-level setting keeps content above the cameras AND lets the strip
+         scroll; shrinking only the nav inset drops the keyboard onto the cameras.
+         The zeekr-style form (absolute path with "@left", rect approximation,
+         mask=true) was also tried: on this panel it parsed as a 1272px TOP inset,
+         i.e. the whole display. So: no declaration. Apps use the whole panel and
+         the camera block occludes the bottom-right corner, which is how the cover
+         display looks on stock. -->
+    <string translatable="false" name="config_secondaryBuiltInDisplayCutout"></string>
 
     <!-- arcfox: per-display resource index. This array is the ONLY index source
          DisplayUtils.getDisplayUniqueIdConfigIndex() uses; without it it returns

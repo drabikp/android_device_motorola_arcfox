@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox: values-sw430dp is a COVER-DISPLAY-ONLY qualifier on this device. The
+     cover panel is 1080x1272 at 360 dpi = 480x565 dp (smallest width 480), the inner
+     panel is 1080x2640 at 420 dpi = 411x1005 dp (smallest width 411 < 430). Measured
+     with `wm density` / `dumpsys display` on 2026-09-13.
+
+     The cover's rear camera block covers x 585..1080, y 923..1272 px. The block is
+     NOT declared as a display cutout (see the framework overlay: on AOSP a bottom
+     cutout kills scrolling in the whole bottom strip), so the two things that would
+     otherwise land under the cameras are moved here instead:
+       - the hotseat gets extra bottom space so the dock sits above y=923
+         (dock icons were centred at y~1100, 135 px tall)
+       - the IME window alone is told the navigation bar is taller, so the keyboard's
+         bottom row (ended at y=1130 with a 54 px bar) ends above y=923
+     px/dp on the cover = 2.25. -->
+<resources>
+    <dimen name="hotseat_bar_bottom_space_extra">120dp</dimen>
+    <dimen name="taskbar_ime_bottom_inset_override">146dp</dimen>
+</resources>
