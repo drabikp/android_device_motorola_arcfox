@@ -53,6 +53,17 @@
     <!-- arcfox stock declares no rear-display state. zeekr's tree has a
          REAR_DISPLAY_STATE with FLAG_EMULATED_ONLY; that is a zeekr construct,
          not something arcfox hardware reports. Left empty deliberately. -->
+    <!-- arcfox: wake the device when it is opened (states 4 HALF_OPENED_MAIN,
+         5 OPENED, 6 OPENED_HALL). Same intent as PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE
+         in fold/device_state_configuration.xml; this array is the pre-migration
+         path LogicalDisplayMapper still reads when the device_state_property_migration
+         flag is off. Both are set so the behaviour does not depend on the flag. -->
+    <integer-array name="config_deviceStatesOnWhichToWakeUp">
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </integer-array>
+
     <integer-array name="config_rearDisplayDeviceStates">
     </integer-array>
 

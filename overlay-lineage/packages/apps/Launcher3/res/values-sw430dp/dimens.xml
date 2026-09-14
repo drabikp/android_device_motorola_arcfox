@@ -8,11 +8,20 @@
      NOT declared as a display cutout (see the framework overlay: on AOSP a bottom
      cutout kills scrolling in the whole bottom strip), so the two things that would
      otherwise land under the cameras are moved here instead:
-       - the hotseat gets extra bottom space so the dock sits above y=923
-         (dock icons were centred at y~1100, 135 px tall)
+       - the hotseat gets extra bottom space so the dock icons end above y=923
+         (they were centred at y~1100, 135 px tall)
        - the IME window alone is told the navigation bar is taller, so the keyboard's
-         bottom row (ended at y=1130 with a 54 px bar) ends above y=923
-     px/dp on the cover = 2.25. -->
+         bottom row (ended at y=1130 with a 54 px bar) ends above y=923 (measured
+         y~910). Portrait only: Launcher3 applies it for ROTATION_0 with the bar at
+         the bottom; in landscape the block is at a side, not under the key rows.
+     px/dp on the cover = 2.25.
+
+     History: the override was briefly blamed for the inner panel staying black
+     after unfolding. That was a separate defect (the device-state table lacked
+     PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE, so a long fold did not wake on
+     open; see fold/device_state_configuration.xml). Its one real fault, a launcher
+     crash when the override SET changed between panels, is fixed in the Launcher3
+     patch by keeping the entry constant. -->
 <resources>
     <dimen name="hotseat_bar_bottom_space_extra">120dp</dimen>
     <dimen name="taskbar_ime_bottom_inset_override">146dp</dimen>
