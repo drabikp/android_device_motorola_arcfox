@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox cover display only (see ../../../../../res/values-sw430dp/dimens.xml).
+     The lock icon's bottom margin is 74dp (166px) upstream, i.e. inside the camera
+     block's rows; the indication text sits below it. Raise the icon so it stays
+     above the raised text: icon bottom at y~870. -->
+<resources>
+    <dimen name="lock_icon_margin_bottom">179dp</dimen>
+</resources>
