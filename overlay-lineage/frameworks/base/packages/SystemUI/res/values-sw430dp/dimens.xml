@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox: values-sw430dp selects the COVER display only (480x565dp; the inner panel
+     is 411dp wide). SystemUI follows the default display's configuration, which is
+     the cover while the phone is folded.
+
+     The lock screen's indication text ("Swipe up to open") is centred and bottom
+     anchored 32dp (72px) above the panel edge, which puts its right half behind the
+     camera block (x 585..1080, y 923..1272). Anchor it above stock's 297px camera
+     rule instead: bottom edge at y~950. The lock icon moves up with it, see
+     customization/clocks/common/res/values-sw430dp/dimens.xml. -->
+<resources>
+    <dimen name="keyguard_indication_margin_bottom">143dp</dimen>
+</resources>
