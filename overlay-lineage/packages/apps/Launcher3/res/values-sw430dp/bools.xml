@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox cover display only (values-sw430dp, see dimens.xml here). The cover is
+     565dp tall and shares the inner panel's 4x5 grid, so Launcher3 scales the
+     workspace down to fit (0.57 with the dock lifted above the camera block) and,
+     upstream, shrinks the all-apps grid by the same factor: 37dp icons with 7dp
+     labels. All-apps scrolls and does not need to fit; keep it at full size. -->
+<resources>
+    <bool name="all_apps_ignore_workspace_scale">true</bool>
+</resources>
