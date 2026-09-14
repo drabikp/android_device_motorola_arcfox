@@ -16,6 +16,18 @@
          the bottom; in landscape the block is at a side, not under the key rows.
      px/dp on the cover = 2.25.
 
+     Sizes follow stock's own restriction, not the glass: Motorola's framework keeps
+     app windows 297 px (config_cli_display_cutout_camera_height) above the bottom
+     edge, letting content run 52 px into the rounded top of the block (measured
+     from the decompiled W1UXS36H services.jar). Dock icons therefore end at y~947
+     and the keyboard's bottom row at y~961 (block glass starts at y=923).
+
+     Landscape: stock cuts a 297 px strip on the camera side for every app. Here
+     taskbar_covered_side_inset_landscape makes Launcher3's taskbar provide a second
+     navigationBars inset on that side in rotations 90/270, so app bounds, window
+     frames and the keyboard lay out around it like a side navigation bar; portrait
+     keeps the whole panel.
+
      History: the override was briefly blamed for the inner panel staying black
      after unfolding. That was a separate defect (the device-state table lacked
      PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE, so a long fold did not wake on
@@ -23,6 +35,7 @@
      crash when the override SET changed between panels, is fixed in the Launcher3
      patch by keeping the entry constant. -->
 <resources>
-    <dimen name="hotseat_bar_bottom_space_extra">120dp</dimen>
-    <dimen name="taskbar_ime_bottom_inset_override">146dp</dimen>
+    <dimen name="hotseat_bar_bottom_space_extra">97dp</dimen>
+    <dimen name="taskbar_ime_bottom_inset_override">123dp</dimen>
+    <dimen name="taskbar_covered_side_inset_landscape">297px</dimen>
 </resources>

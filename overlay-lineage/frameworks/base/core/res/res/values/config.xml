@@ -63,6 +63,20 @@
         <item>5</item>
         <item>6</item>
     </integer-array>
+    <!-- arcfox: the closed states (0 CLOSED_HALL, 1 CLOSED) carry
+         PROPERTY_POWER_CONFIGURATION_TRIGGER_SLEEP in fold/device_state_configuration.xml;
+         this is the pre-migration equivalent. What folding actually does is then decided
+         by the user's "Continue using apps on fold" choice below: Always keeps the cover
+         interactive, the default only sleeps when no app holds the screen awake, Never
+         locks. TENT (2) is not a sleep state: the phone is folded partially on purpose. -->
+    <integer-array name="config_deviceStatesOnWhichToSleep">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+    <!-- arcfox: expose the AOSP "Continue using apps on fold" setting (Display). Stock offers
+         the same three choices from its own cover settings. Its feature flag
+         (fold_lock_setting_enabled) is fixed-on in this build. -->
+    <bool name="config_fold_lock_behavior">true</bool>
 
     <integer-array name="config_rearDisplayDeviceStates">
     </integer-array>

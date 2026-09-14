@@ -46,9 +46,11 @@
     opening the phone left the inner panel off until a key press, which read as
     "the inner display is black after unfolding". Measured with dumpsys
     (mDeviceStatesOnWhichToWakeUp={}, SurfaceFlinger inner powerMode=Off, wakeup
-    on the next key). TRIGGER_SLEEP is deliberately not set: folding keeps the
-    cover interactive, as before, and the AOSP "stay awake on fold" setting
-    stays meaningful.
+    on the next key). SLEEP ON FOLD (added the same day): states 0 and 1 carry
+    PROPERTY_POWER_CONFIGURATION_TRIGGER_SLEEP so the AOSP "Continue using apps
+    on fold" setting (config_fold_lock_behavior in the framework overlay) has
+    something to act on: Always = cover stays interactive, default = sleeps
+    unless an app holds the screen awake, Never = locks. TENT (2) is excluded.
 -->
 <device-state-config>
   <device-state>
@@ -58,6 +60,7 @@
       <property>com.android.server.policy.PROPERTY_POLICY_CANCEL_OVERRIDE_REQUESTS</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_POWER_CONFIGURATION_TRIGGER_SLEEP</property>
       <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
     </properties>
     <conditions>
@@ -72,6 +75,7 @@
     <properties>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_CLOSED</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_OUTER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_POWER_CONFIGURATION_TRIGGER_SLEEP</property>
       <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
     </properties>
     <conditions>
