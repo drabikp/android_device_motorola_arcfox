@@ -39,6 +39,16 @@
     everywhere else, which is what separates TENT from HALF_OPENED_MAIN when
     they share a hinge angle. value[2] read 0 in every position measured and its
     meaning is unknown.
+    WAKE ON UNFOLD (added 2026-09-14): states 4, 5 and 6 carry
+    PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE. Stock's table does not: Motorola
+    wakes the phone on open from its own code, and on AOSP the absence means an
+    unfold does NOT wake the device: if the cover screen had timed out while folded,
+    opening the phone left the inner panel off until a key press, which read as
+    "the inner display is black after unfolding". Measured with dumpsys
+    (mDeviceStatesOnWhichToWakeUp={}, SurfaceFlinger inner powerMode=Off, wakeup
+    on the next key). TRIGGER_SLEEP is deliberately not set: folding keeps the
+    cover interactive, as before, and the AOSP "stay awake on fold" setting
+    stays meaningful.
 -->
 <device-state-config>
   <device-state>
@@ -146,6 +156,7 @@
     <properties>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_HALF_OPEN</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE</property>
     </properties>
     <conditions>
       <lid-switch>
@@ -169,6 +180,7 @@
     <properties>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_OPEN</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
+      <property>com.android.server.policy.PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE</property>
     </properties>
     <conditions>
       <lid-switch>
@@ -193,6 +205,7 @@
       <property>com.android.server.policy.PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_FOLD_IN_OPEN</property>
       <property>com.android.server.policy.PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_INNER_PRIMARY</property>
       <property>com.android.server.policy.PROPERTY_APP_INACCESSIBLE</property>
+      <property>com.android.server.policy.PROPERTY_POWER_CONFIGURATION_TRIGGER_WAKE</property>
     </properties>
     <conditions>
       <lid-switch>

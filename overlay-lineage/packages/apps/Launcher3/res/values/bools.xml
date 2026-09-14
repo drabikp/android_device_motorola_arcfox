@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox: enable Launcher3's IME-only bottom inset override device-wide. The
+     SIZE of the override is per panel (values-sw430dp/dimens.xml gives the cover
+     146dp; the inner panel keeps the default 0dp, which makes the entry repeat the
+     normal navigation bar size there). The switch itself must not differ between
+     panels: the taskbar window survives fold/unfold display switches and
+     WindowManager rejects a relayout that changes the set of override types. -->
+<resources>
+    <bool name="taskbar_ime_bottom_inset_override_enabled">true</bool>
+</resources>
