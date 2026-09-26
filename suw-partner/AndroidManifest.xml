@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Stand-in for the SetupWizard partner-config content provider.
+
+  Google's LPA (EuiccGoogle, the eSIM wizard) bundles the setupcompat/setupdesign
+  libraries. Before drawing any screen they ask the content provider at
+  authority com.google.android.setupwizard.partner whether the setup UI follows
+  the system DayNight theme. That provider lives in Google's SetupWizard app,
+  which a GApps-free build does not ship, and the bundled library treats "no
+  provider" as "no" and draws the light GLIF theme regardless of
+  setupwizard.theme=glif_v4 and the user's dark mode. This provider answers the
+  theme questions and nothing else (getOverlayConfig returns no overrides, so
+  every partner-styled value falls back to the library defaults).
+
+  If Google's SetupWizard is installed later it declares the same authority as a
+  priv-app and PackageManager registers it first; this component is then skipped
+  (harmless warning at boot). See Android.bp.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.lineageos.arcfox.suwpartner">
+    <application
+        android:label="@string/app_name"
+        android:allowBackup="false"
+        android:directBootAware="true">
+        <provider
+            android:name=".PartnerConfigProvider"
+            android:authorities="com.google.android.setupwizard.partner"
+            android:exported="true"
+            android:directBootAware="true" />
+    </application>
+</manifest>

@@ -157,6 +157,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     ArcfoxEuiccOverlay
 
+# The eSIM wizard (EuiccGoogle) asks Google SetupWizard's partner-config provider
+# whether to follow the system DayNight theme; without GApps nobody answers and
+# it draws light. This stub answers (see suw-partner/AndroidManifest.xml) and
+# yields to the real provider when GApps are installed.
+PRODUCT_PACKAGES += \
+    SetupWizardPartnerStub
+
 # The LPA (EuiccGoogle, a blob) needs the feature declared or PhoneFactory
 # (frameworks/opt/telephony .../PhoneFactory.java) never starts EuiccController.
 # The .mep file alone declares BOTH android.hardware.telephony.euicc and

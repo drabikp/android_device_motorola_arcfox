@@ -1,0 +1,18 @@
+// Minimal SetupWizard partner-config provider (see AndroidManifest.xml for why).
+// Non-privileged and on system_ext on purpose: PackageManager scans every
+// priv-app directory of a partition before its app directory, and yields the
+// authority to whichever package registered it first (ComponentResolver:
+// "Skipping provider name ... already used by"). Google's SetupWizard, when a
+// GApps package installs it, is always a priv-app, so it wins and this stub is
+// silently skipped; without GApps this stub is the only provider.
+android_app {
+    name: "SetupWizardPartnerStub",
+    srcs: ["src/**/*.java"],
+    manifest: "AndroidManifest.xml",
+    sdk_version: "current",
+    system_ext_specific: true,
+    certificate: "platform",
+    optimize: {
+        enabled: false,
+    },
+}
