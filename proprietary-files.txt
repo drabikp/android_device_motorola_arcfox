@@ -430,3 +430,30 @@ vendor/etc/eva/facelandmark/weight_3_2.dat
 # The two jars, their permission XMLs and system_ext/bin/motsettings go with it:
 # nothing shipped declares <uses-library> on either jar and no init rc references
 # the script.
+
+# eSIM / eUICC — the LPA and its permissions.
+#
+# EuiccGoogle is the SAME package GrapheneOS and CalyxOS ship
+# (com.google.android.euicc); the ES9+/RSP stack is in-process. MEASURED on this
+# device 2026-09-23: with NO GMS installed the LPA binds and eUICC ENUMERATION
+# succeeds (result=OK, isRemovable=false). ⚠️ Enumeration only ever returned
+# mProfiles=[] (the card holds no profiles), and the one profile DOWNLOAD
+# attempted FAILED, so "works without GApps" is proven for enumeration only.
+# Both apks are ;PRESIGNED — they are byte-identical to stock, and re-signing
+# would break the privapp permission grants keyed to their signature.
+#
+# EuiccPartnerApp supplies Motorola's partner customisation; its base apk's
+# sim_slot_mappings_json carries {"devices":["arcfox"],"esim-slot-ids":[1],
+# "psim-slot-ids":[0]}. NOTE: stock also ships 8 EuiccPartnerApp RROs, including
+# EuiccPartnerAppSwitchableOverlayArcfox.apk which overrides that to
+# esim-slot-ids:[0]/psim-slot-ids:[] for the eSIM-ONLY SKU. We ship none of them,
+# which is correct for this dual-SIM unit — recorded here so a re-extract or an
+# eSIM-only variant has something to check against.
+#
+# Inert without `non_removable_euicc_slots = [1]` from the ArcfoxEuiccOverlay RRO
+# (device/motorola/arcfox/rro-euicc); see the eSIM block in device.mk.
+product/priv-app/EuiccGoogle/EuiccGoogle.apk;PRESIGNED
+product/priv-app/EuiccPartnerApp/EuiccPartnerApp.apk;PRESIGNED
+product/etc/permissions/privapp-permissions-com.google.android.euicc.xml
+product/etc/permissions/privapp-permissions-com.oem.euiccpartnerapp.xml
+product/etc/default-permissions/default-permissions-com.google.android.euicc.xml

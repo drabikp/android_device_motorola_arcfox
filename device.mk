@@ -131,5 +131,51 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
+# --- eSIM / eUICC -----------------------------------------------------------
+# The soldered eUICC is physical slot 1. AOSP defaults `non_removable_euicc_slots`
+# to an EMPTY array (frameworks/base/core/res/res/values/arrays.xml); stock ships
+# [1] in its own arcfox RRO (product/overlay/framework-res__arcfox_g__*.apk).
+# ArcfoxEuiccOverlay is our equivalent.
+#
+# WHAT THE RESOURCE ACTUALLY DOES (verified in source, 2026-09-23): it is read
+# only by UiccSlot.isSlotRemovable() and UiccController.hasBuiltInEuicc(). Its
+# effects are the choice of mDefaultEuiccCardId (UiccController), and
+# isEmbeddedSlotActivated/isEmbeddedCardPresent (EuiccCardController). With the
+# array empty, UiccController never sets mDefaultEuiccCardId from a built-in
+# eUICC and the slot is reported as a REMOVABLE eUICC.
+#
+# MEASURED: with the overlay active, `cmd overlay lookup android
+# android:array/non_removable_euicc_slots` returns 1, and enumeration reports
+# `isRemovable=false` instead of true.
+#
+# ⚠️ DO NOT claim this resource causes MUST_DEACTIVATE_SIM. That value is
+# returned by the LPA (android/service/euicc/EuiccService.java:321), not decided
+# by the framework, and it has been observed here WITH isRemovable=false. The
+# earlier A/B that appeared to show this fixing an APDU timeout was not a valid
+# A/B: the failing arm was a boot-time attempt and the passing arm a runtime
+# retry, and an unrelated RIL request stalled identically at the same moment.
+PRODUCT_PACKAGES += \
+    ArcfoxEuiccOverlay
+
+# The LPA (EuiccGoogle, a blob) needs the feature declared or PhoneFactory
+# (frameworks/opt/telephony .../PhoneFactory.java) never starts EuiccController.
+# The .mep file alone declares BOTH android.hardware.telephony.euicc and
+# .euicc.mep, so the plain euicc.xml below is redundant; it is kept only to
+# mirror stock's file set exactly. The hardware reports MEP_B, but note
+# FEATURE_TELEPHONY_EUICC_MEP is generic and does not distinguish MEP-A/MEP-B.
+# ⚠️ Never ship these without the LPA — EuiccRepository does not check for one,
+# so Settings would offer eSIM and dead-end silently in EuiccUiDispatcherActivity.
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.telephony.euicc.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/android.hardware.telephony.euicc.xml \
+    frameworks/native/data/etc/android.hardware.telephony.euicc.mep.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/android.hardware.telephony.euicc.mep.xml
+
+# Matches stock's product/etc/build.prop and official Motorola trees (avatrn,
+# genevn). NOTE: nothing we ship actually reads ro.telephony.esim_slot_id --
+# it is absent from EuiccGoogle's dex, from EuiccPartnerApp's (2.8 KB) dex, and
+# from frameworks/. Kept for stock parity only; do not credit it for anything.
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.telephony.esim_slot_id=1 \
+    masterclear.allow_retain_esim_profiles_after_fdr=true
+
 # --- Blobs ------------------------------------------------------------------
 $(call inherit-product-if-exists, vendor/motorola/arcfox/arcfox-vendor.mk)

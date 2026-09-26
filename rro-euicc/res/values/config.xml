@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Physical slot 1 holds the soldered eUICC. AOSP defaults this to an
+         empty array, which makes the framework treat the eUICC as REMOVABLE;
+         the ES10 APDU then times out in the modem after 5.12 s. Stock ships
+         the same value in its arcfox framework RRO. -->
+    <integer-array name="non_removable_euicc_slots">
+        <item>1</item>
+    </integer-array>
+
+    <!-- Matches stock's arcfox RRO. -->
+    <string-array name="config_telephonyEuiccDeviceCapabilities" translatable="false">
+        <item>gsm,9</item>
+        <item>utran,9</item>
+        <item>eutran,17</item>
+        <item>nfc,17</item>
+    </string-array>
+
+    <!-- Physical slot 0 = nano-SIM, slot 1 = the soldered eUICC. AOSP defaults
+         to 1; stock ships 2 via MotoFrameworkResOverlayDualSim.apk, and logs it
+         from UiccController's constructor before any card access. Shipping it
+         here rather than Motorola's overlay avoids a priority clash (ours is
+         isStatic priority 1, theirs is 5).
+         NOTE: this is stock PARITY, not a fix — tested cleanly (overlay active,
+         device untouched 5 min) and it does NOT resolve the eUICC bring-up
+         stall. Do not credit it if eSIM enumeration starts working. -->
+    <integer name="config_num_physical_slots">2</integer>
+</resources>
