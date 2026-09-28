@@ -256,4 +256,27 @@
         <item>5:3</item>
         <item>6:3</item>
     </string-array>
+
+    <!-- arcfox: REFRESH RATE. Without these the whole phone renders at 60 Hz.
+         AOSP defaults are config_defaultRefreshRate 60 and
+         config_defaultPeakRefreshRate 0. DisplayModeDirector turns a non-zero
+         default into a global (display -1) render vote of 0..60 at
+         PRIORITY_DEFAULT_REFRESH_RATE, and with no peak default nothing widens
+         it. Measured 2026-09-28 on 23.2-20260926: the panel offers
+         24/30/60/90/120/165 Hz, yet scrolling rendered at 60 Hz on 12 of 12
+         samples, and even a user peak_refresh_rate of 165 left it at 60.
+         Our display_id_*.xml files carry no refreshRate block, so
+         RefreshRateData falls back to these resources.
+
+         Values are Motorola's own, read with aapt2 from the W1UXS36H dump:
+             vendor/overlay/framework-res__auto_generated_rro_vendor.apk
+               integer/config_defaultRefreshRate      0
+               integer/config_defaultPeakRefreshRate  120
+         Stock Settings "High" (the default) writes peak_refresh_rate 120 and
+         "Standard" writes 60; 165 Hz is left to the user (Settings, Display,
+         peak refresh rate list, enabled in the Settings overlay).
+         Validated live with the same values in a vendor RRO: 120 Hz while
+         scrolling, 24 Hz when idle; user peak 60 gives 60, peak 165 gives 165. -->
+    <integer name="config_defaultRefreshRate">0</integer>
+    <integer name="config_defaultPeakRefreshRate">120</integer>
 </resources>
