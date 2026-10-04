@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="app_name">Flip phone calls</string>
+
+    <string name="settings_title">Flip phone calls</string>
+    <string name="settings_summary">Answer by opening the phone, end calls by closing it</string>
+
+    <string name="answer_on_open_title">Open to answer</string>
+    <string name="answer_on_open_summary">Answer an incoming call by opening the phone</string>
+
+    <string name="end_on_close_title">Close to end call</string>
+    <string name="end_on_close_summary_on">Closing the phone ends or declines the call. Calls on the speakerphone, a headset or Bluetooth continue.</string>
+    <string name="end_on_close_summary_off">Closing the phone keeps the call going on the speakerphone</string>
+
+    <string name="footer">A call answered or started on the cover screen, or one that continues after the phone is folded past halfway, uses the speakerphone. Closing the phone never ends an emergency call; it moves it to the speakerphone.</string>
+
+    <string name="flip_open_to_manage_call">Flip open to manage call</string>
+</resources>

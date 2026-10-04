@@ -1,0 +1,38 @@
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// ArcfoxFlipCalls -- answer a call by opening the flip, end it by closing it.
+//
+// On stock this lives inside Motorola's patched Telecom.apk
+// (CallsManager.handleDeviceStateAction, fed by a device-state broadcast from
+// Motorola's services.jar) with its switches in MotorolaSettings and the
+// Phone app. None of that exists on AOSP, so this app rebuilds the same
+// behaviour from public pieces: a non-UI InCallService that Telecom binds only
+// while calls exist, plus a DeviceStateManager callback.
+//
+// Platform-signed for three signature|privileged permissions:
+// CONTROL_INCALL_EXPERIENCE (Telecom binds a non-UI InCallService only if its
+// app holds it), MODIFY_PHONE_STATE (TelecomManager.isInEmergencyCall) and
+// WRITE_SECURE_SETTINGS (the two Settings.Global switches). Signature grants
+// need neither priv-app nor a privapp allowlist, and device_state_service is an
+// app_api_service, so there is no device sepolicy either.
+//
+// The settings page uses framework preferences on purpose: the SettingsLib
+// look cost 26 MB unshrunk and 4.8 MB through R8, for two switches.
+
+android_app {
+    name: "ArcfoxFlipCalls",
+
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+
+    // DeviceStateManager and TelecomManager.isInEmergencyCall are system APIs.
+    platform_apis: true,
+    certificate: "platform",
+    system_ext_specific: true,
+
+    optimize: {
+        enabled: false,
+    },
+}

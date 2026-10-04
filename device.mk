@@ -164,6 +164,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     SetupWizardPartnerStub
 
+# Flip open to answer, close to end a call, speakerphone while folded. Stock
+# does this inside Motorola's patched Telecom.apk; see flipcalls/Android.bp.
+PRODUCT_PACKAGES += \
+    ArcfoxFlipCalls
+
 # The LPA (EuiccGoogle, a blob) needs the feature declared or PhoneFactory
 # (frameworks/opt/telephony .../PhoneFactory.java) never starts EuiccController.
 # The .mep file alone declares BOTH android.hardware.telephony.euicc and
