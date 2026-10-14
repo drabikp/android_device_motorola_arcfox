@@ -66,8 +66,8 @@ PRODUCT_COPY_FILES += \
 
 # Overlay carrying config_foldedDeviceStates / halfFolded / open. Required in
 # addition to the PROPERTY_FOLDABLE_* declarations in the device-state XML:
-# both mechanisms are live in 23.2 and the legacy arrays are still read across
-# frameworks/base.
+# both mechanisms are live in 23.2 and 24.0, and the legacy arrays are still
+# read across frameworks/base.
 PRODUCT_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay-lineage
 
 # --- Recovery USB -----------------------------------------------------------

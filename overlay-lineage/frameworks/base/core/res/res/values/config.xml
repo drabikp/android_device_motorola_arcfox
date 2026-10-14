@@ -6,7 +6,7 @@
     declares PROPERTY_FOLDABLE_HARDWARE_CONFIGURATION_* and
     PROPERTY_FOLDABLE_DISPLAY_CONFIGURATION_* per state:
 
-    Both mechanisms are live in LineageOS 23.2. The new properties are defined in
+    Both mechanisms are live in LineageOS 23.2 and 24.0. The new properties are defined in
     frameworks/base/core/java/android/hardware/devicestate/DeviceState.java, but
     the legacy integer arrays below are still referenced across frameworks/base
     (config_foldedDeviceStates in 22 files, config_halfFoldedDeviceStates in 6,

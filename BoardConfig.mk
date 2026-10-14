@@ -64,7 +64,8 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 #     }
 # The flag is is_fixed_read_only, so it is a build-time decision, and LineageOS
 # already ships the value set that turns it on
-# (vendor/lineage/release/aconfig/bp4a/com.android.graphics.bootanimation.flags/)
+# (vendor/lineage/release/aconfig/<release>/com.android.graphics.bootanimation.flags/,
+# bp4a on 23.2 and cp2a on 24.0; both gate it on this same soong variable)
 # gated behind exactly this soong config variable. No device tree in this tree
 # sets it, so it has always been off.
 #
