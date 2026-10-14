@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    SystemUI's own copy of the corner geometry for arcfox (Razr 50 Ultra).
+    SystemUI corner padding for arcfox (Razr 50 Ultra).
 
-    SystemUI does NOT reuse the framework's rounded_corner_radius. It keeps its
-    own pair:
+      rounded_corner_content_padding  the horizontal padding SystemUI applies to
+                                      the status bar so text and icons clear the
+                                      curve (StatusBarContentInsetsProvider,
+                                      KeyguardStatusBarView, ShadeHeaderController,
+                                      NavigationBarView all read it)
 
-      real_rounded_corner_radius     the radius it uses to draw the corner
-                                     overlay and to decide how far to inset
-                                     status-bar content
-      rounded_corner_content_padding the horizontal padding applied to the status
-                                     bar so text and icons clear the curve
+    The corner RADIUS comes from the framework's rounded_corner_radius in
+    core/res/.../config.xml; with this padding left at the AOSP default the
+    corners are reported correctly but the clock is laid out as if the panel
+    were square. That is why both files change together.
 
-    With both left at the AOSP defaults, the framework-side fix in
-    core/res/.../config.xml is not enough on its own: the corners get reported
-    correctly but SystemUI still lays the clock out as if the panel were square.
-    That is why both files change together.
-
-    Values read with aapt2 from Motorola's own overlay in the W1UXS36H dump,
+    Value read with aapt2 from Motorola's own overlay in the W1UXS36H dump,
     product/overlay/SystemUI__arcfox_g__auto_generated_rro_product.apk:
 
-        dimen/real_rounded_corner_radius        103px
         dimen/rounded_corner_content_padding     27px
 
-    Note 103px here against 100px for the framework's rounded_corner_radius.
-    That 3px difference is Motorola's, not a transcription slip. SystemUI
-    deliberately draws its anti-aliased corner overlay very slightly proud of the
-    layout radius so no lit pixel survives at the edge of the curve. Do not
-    "correct" them to match.
+    The same overlay also sets dimen/real_rounded_corner_radius (103px). That
+    name exists only in Motorola's SystemUI: no file in frameworks/base declares
+    or reads it on lineage-23.2 or lineage-24.0, so it was dropped here rather
+    than carried as an inert value.
 
     Deliberately NOT copied from the same overlay yet, because each needs its own
     verification and none of them is the reported bug:
@@ -36,6 +31,5 @@
         display and are only meaningful once the cover panel is driven properly.
 -->
 <resources>
-    <dimen name="real_rounded_corner_radius">103px</dimen>
     <dimen name="rounded_corner_content_padding">27px</dimen>
 </resources>
