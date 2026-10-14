@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Settings strings for motorola arcfox.
+
+    AOSP ships the face enrollment education message as an empty string, a hook
+    for a vendor overlay, so the screen shows a title and an animation with no
+    instructions. Motorola's own SettingsMoto.apk leaves it empty too; stock
+    never shows this screen because it enrolls through its own app.
+-->
+<resources>
+    <string name="security_settings_face_enroll_education_message">Hold your phone at eye level, about an arm’s length away, and put your face inside the circle. Move your head slowly when you’re asked to.</string>
+</resources>
