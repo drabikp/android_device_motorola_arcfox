@@ -55,8 +55,13 @@ PRODUCT_COPY_FILES += \
 # display so its touches stop being injected into the inner UI; see the file's
 # own comment for the TouchInputMapper fallback that made that happen. Stock
 # ships the identical file at this path.
+#
+# The two volume key devices get the cover panel's volume rotation offset: the
+# rocker is upside down relative to the cover (see idc/gpio-keys.idc).
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/idc/gdx_cli_0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/gdx_cli_0.idc
+    $(LOCAL_PATH)/idc/gdx_cli_0.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/gdx_cli_0.idc \
+    $(LOCAL_PATH)/idc/gpio-keys.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/gpio-keys.idc \
+    $(LOCAL_PATH)/idc/pmic_resin.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/pmic_resin.idc
 
 # Video stabilisation. Without this the IPE runs with stabilizationtype 72
 # (SAT|MCTF, no EIS bit) and an identity warp, i.e. video is recorded
