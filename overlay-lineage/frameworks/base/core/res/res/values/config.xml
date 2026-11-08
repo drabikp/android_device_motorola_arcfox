@@ -279,4 +279,27 @@
          scrolling, 24 Hz when idle; user peak 60 gives 60, peak 165 gives 165. -->
     <integer name="config_defaultRefreshRate">0</integer>
     <integer name="config_defaultPeakRefreshRate">120</integer>
+
+    <!-- arcfox: ambient display and always-on display. Without a doze component,
+         AmbientDisplayConfiguration reports nothing available and Settings hides
+         every lock screen display option. The values match Motorola's own overlay
+         in the W1UXS36H dump (product/overlay/framework-res__arcfox_g__auto_generated_rro_product.apk):
+         SystemUI's DozeService, AOD available but off until the user turns it on,
+         and the power state decoupled from the display, so the SoC can suspend
+         while the always-on display is lit.
+         Both panels carry lp1, lp2 and nolp commands in the stock dtbo, which
+         msm_drm maps to DOZE and DOZE_SUSPEND. The stock config_dozeAfterScreenOff
+         has no Android 17 counterpart and is left out. -->
+    <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
+    <bool name="config_dozeAlwaysOnDisplayAvailable">true</bool>
+    <bool name="config_dozeAlwaysOnEnabled">false</bool>
+    <bool name="config_powerDecoupleAutoSuspendModeFromDisplay">true</bool>
+    <bool name="config_powerDecoupleInteractiveModeFromDisplay">true</bool>
+
+    <!-- arcfox: doze brightness fallback. The per-panel defaultDozeBrightness in
+         fold/display_id_*.xml wins when present (DisplayDeviceConfig); this is
+         only used without it. The AOSP default 0.0 would leave the AOD black.
+         Stock uses 0.5, brighter than the user's slider at 83 percent (0.40),
+         so this starts much dimmer. -->
+    <item name="config_screenBrightnessDozeFloat" format="float" type="dimen">0.05</item>
 </resources>

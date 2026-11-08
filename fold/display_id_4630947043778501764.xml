@@ -36,4 +36,9 @@
             <density>360</density>
         </density>
     </densityMapping>
+    <!-- Brightness while dozing (always-on display), scale [0, 1]. This wins over
+         the framework's config_screenBrightnessDozeFloat. Kept per panel so it can
+         be tuned with a vendor remount and a reboot. The cover's lp2 command also
+         sets its own brightness (51 03 e8) in DOZE_SUSPEND. -->
+    <defaultDozeBrightness>0.05</defaultDozeBrightness>
 </displayConfiguration>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    arcfox: let SystemUI's doze machine use the panel low-power states.
+
+      doze_display_state_supported          DOZE (msm_drm LP1) while AOD is shown
+      doze_suspend_display_state_supported  DOZE_SUSPEND (LP2) once nothing animates
+
+    Without them DozeService keeps the display fully ON while dozing. Both values
+    match Motorola's overlay in the W1UXS36H dump,
+    product/overlay/SystemUI__arcfox_g__auto_generated_rro_product.apk.
+-->
+<resources>
+    <bool name="doze_display_state_supported">true</bool>
+    <bool name="doze_suspend_display_state_supported">true</bool>
+</resources>
