@@ -7,4 +7,12 @@
      WindowManager rejects a relayout that changes the set of override types. -->
 <resources>
     <bool name="taskbar_ime_bottom_inset_override_enabled">true</bool>
+
+    <!-- arcfox: let the home screen follow auto-rotate. Android 17 removed
+         Launcher3's "Allow home screen rotation" preference and keeps the home
+         screen in portrait below 600dp, which covers both panels here (411dp and
+         480dp). This is LineageOS's build switch for that case (Launcher3
+         edfd2673ad). It is read per activity and the launcher survives fold
+         and unfold, so it must stay device-wide like the switch above. -->
+    <bool name="config_allowRotation">true</bool>
 </resources>
