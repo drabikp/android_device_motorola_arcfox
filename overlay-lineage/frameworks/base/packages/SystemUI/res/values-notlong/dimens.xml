@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- arcfox: values-notlong selects the COVER display only (aspect 1.18; the inner
+     panel is 2.44, "long"), at any display size. It replaced values-sw430dp, which
+     moved with density: see Launcher3's values-notlong/dimens.xml in this overlay.
+     SystemUI follows the default display's configuration, which is the cover while
+     the phone is folded. The margin is in px (the old 143dp at 2.25 px/dp) because
+     the camera block is a fixed area of physical pixels.
+
+     The lock screen's indication text ("Swipe up to open") is centred and bottom
+     anchored 32dp (72px) above the panel edge, which puts its right half behind the
+     camera block (x 585..1080, y 923..1272). Anchor it above stock's 297px camera
+     rule instead: bottom edge at y~950. The lock icon moves up with it, see
+     customization/clocks/common/res/values-notlong/dimens.xml. -->
+<resources>
+    <dimen name="keyguard_indication_margin_bottom">322px</dimen>
+</resources>

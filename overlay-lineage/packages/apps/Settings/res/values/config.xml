@@ -23,4 +23,11 @@
          of 1080x1080, an exact entry of camera 1's stream configurations and
          the size verified on this device with the 23.2 Settings fork. -->
     <bool name="config_face_enroll_hal_owns_camera">true</bool>
+
+    <!-- arcfox: Display size per screen. The panels have different default densities
+         (inner 420 dpi, cover 360 dpi), so one absolute density set on both, the AOSP
+         behaviour, scaled them unevenly: "Large" set while open took the cover from
+         360 to 460 dpi. Each panel now keeps its own size; WindowManager stores it by
+         the panel's unique id. -->
+    <bool name="config_display_size_per_display">true</bool>
 </resources>

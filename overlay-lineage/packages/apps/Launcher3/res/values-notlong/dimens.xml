@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- arcfox: values-sw430dp is a COVER-DISPLAY-ONLY qualifier on this device. The
-     cover panel is 1080x1272 at 360 dpi = 480x565 dp (smallest width 480), the inner
-     panel is 1080x2640 at 420 dpi = 411x1005 dp (smallest width 411 < 430). Measured
-     with `wm density` / `dumpsys display` on 2026-09-13.
+<!-- arcfox: values-notlong is a COVER-DISPLAY-ONLY qualifier on this device. The
+     cover panel is 1080x1272 (aspect 1.18, "notlong"), the inner panel 1080x2640
+     (aspect 2.44, "long"), in both orientations and AT ANY DENSITY. The camera block
+     is a fixed area of physical pixels, so the sizes below are in px as well.
+
+     These hooks used to live in values-sw430dp. Smallest width moves with display
+     size: a larger display size on the cover took it below 430dp and dropped the
+     hooks, and "Small" on the inner panel (about 357 to 378 dpi) took it above 430dp
+     and applied them there. The aspect ratio and the px values don't move with
+     density. At the cover's default 360 dpi (2.25 px/dp) the px values below equal
+     the old 97dp and 123dp.
 
      The cover's rear camera block covers x 585..1080, y 923..1272 px. The block is
      NOT declared as a display cutout (see the framework overlay: on AOSP a bottom
@@ -35,7 +42,7 @@
      crash when the override SET changed between panels, is fixed in the Launcher3
      patch by keeping the entry constant. -->
 <resources>
-    <dimen name="hotseat_bar_bottom_space_extra">97dp</dimen>
-    <dimen name="taskbar_ime_bottom_inset_override">123dp</dimen>
+    <dimen name="hotseat_bar_bottom_space_extra">218px</dimen>
+    <dimen name="taskbar_ime_bottom_inset_override">277px</dimen>
     <dimen name="taskbar_covered_side_inset_landscape">297px</dimen>
 </resources>

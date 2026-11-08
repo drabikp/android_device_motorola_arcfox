@@ -7,7 +7,15 @@ $(call inherit-product, device/motorola/sm8635-common/common.mk)
 
 # Screen density. Inner panel is 420dpi; the cover panel is 360dpi and is
 # handled per-display in fold/display_id_4630947043778501764.xml.
-PRODUCT_AAPT_CONFIG := normal
+#
+# notlong: the cover-only hooks in overlay-lineage (Launcher3, SystemUI) are
+# keyed on the screen aspect, the only qualifier that tells the panels apart at
+# any display size (cover 1.18, inner 2.44). aapt2 treats screen size and
+# long/notlong as ONE screen-layout axis, so with "normal" alone every notlong
+# resource fails the filter and is silently dropped at link time
+# (tools/aapt2/filter/ConfigFilter.cpp). Listing notlong keeps them; size
+# filtering is unchanged.
+PRODUCT_AAPT_CONFIG := normal notlong
 PRODUCT_AAPT_PREF_CONFIG := 420dpi
 PRODUCT_AAPT_PREBUILT_DPI := xxxhdpi xxhdpi xhdpi hdpi
 
