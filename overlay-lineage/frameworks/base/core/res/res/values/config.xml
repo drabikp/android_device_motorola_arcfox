@@ -302,4 +302,89 @@
          Stock uses 0.5, brighter than the user's slider at 83 percent (0.40),
          so this starts much dimmer. -->
     <item name="config_screenBrightnessDozeFloat" format="float" type="dimen">0.05</item>
+
+    <!-- arcfox: adaptive brightness, values from stock (W1UXS36H vendor and product
+         framework-res RROs). Both panels use these: the per-panel display configs only
+         enable autoBrightness and define no map or curve of their own, and stock has no
+         per-panel display configs either. The ambient light sensor is the default
+         android.sensor.light (TCS3720), as on stock. -->
+    <bool name="config_automatic_brightness_available">true</bool>
+
+    <!-- Panel map: brightness value (0 to 255) to nits. -->
+    <integer-array name="config_screenBrightnessBacklight">
+        <item>7</item>
+        <item>26</item>
+        <item>34</item>
+        <item>52</item>
+        <item>85</item>
+        <item>95</item>
+        <item>99</item>
+        <item>107</item>
+        <item>141</item>
+        <item>197</item>
+        <item>210</item>
+        <item>220</item>
+        <item>225</item>
+        <item>230</item>
+        <item>255</item>
+    </integer-array>
+    <array name="config_screenBrightnessNits">
+        <item>3</item>
+        <item>7</item>
+        <item>10</item>
+        <item>24</item>
+        <item>64</item>
+        <item>82</item>
+        <item>90</item>
+        <item>105</item>
+        <item>192</item>
+        <item>412</item>
+        <item>500</item>
+        <item>600</item>
+        <item>800</item>
+        <item>1000</item>
+        <item>1500</item>
+    </array>
+
+    <!-- Curve: ambient lux thresholds and the target nits below, between and above them
+         (one more nits value than lux levels). Stock's 8-entry
+         config_autoBrightnessLcdBacklightValues is left out: it is only a fallback for
+         panels without a nits map and does not match these 14 lux levels. -->
+    <integer-array name="config_autoBrightnessLevels">
+        <item>2</item>
+        <item>4</item>
+        <item>10</item>
+        <item>20</item>
+        <item>40</item>
+        <item>100</item>
+        <item>325</item>
+        <item>1250</item>
+        <item>3500</item>
+        <item>5000</item>
+        <item>10000</item>
+        <item>20000</item>
+        <item>30000</item>
+        <item>200000</item>
+    </integer-array>
+    <array name="config_autoBrightnessDisplayValuesNits">
+        <item>3</item>
+        <item>7</item>
+        <item>10</item>
+        <item>24</item>
+        <item>64</item>
+        <item>82</item>
+        <item>90</item>
+        <item>105</item>
+        <item>192</item>
+        <item>412</item>
+        <item>500</item>
+        <item>600</item>
+        <item>800</item>
+        <item>1000</item>
+        <item>1500</item>
+    </array>
+
+    <!-- Stock reacts to light changes after 0.5 s in both directions (AOSP: 4 s / 8 s). -->
+    <integer name="config_autoBrightnessBrighteningLightDebounce">500</integer>
+    <integer name="config_autoBrightnessDarkeningLightDebounce">500</integer>
 </resources>

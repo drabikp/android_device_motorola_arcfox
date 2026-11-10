@@ -26,8 +26,43 @@
         <quirk>canSetBrightnessViaHwc</quirk>
     </quirks>
 
+    <!-- Adaptive brightness. The default light sensor (TCS3720) sits behind the
+         INNER panel and reads about 2 lux when folded, so the cover uses the outer
+         sensor, stk3bfx, which stock reads as its "rear" light sensor. Stock scales
+         that sensor by 0.6 (config_rearLuxScaleFactor) before using it, so this
+         curve is stock's (config_autoBrightnessLevels and
+         config_autoBrightnessDisplayValuesNits) with every lux threshold divided by
+         0.6 and every nits target turned into a brightness value through the panel
+         map (config_screenBrightnessNits and config_screenBrightnessBacklight,
+         (backlight - 1) / 254). Stock's 5500 lux cap is not applied: in stock it
+         limits the rear sensor's help to the inner screen, which faces the other
+         way. -->
     <autoBrightness enabled="true">
+        <luxToBrightnessMapping>
+            <map>
+                <point><first>0.0</first><second>0.0236</second></point>
+                <point><first>3.3</first><second>0.0984</second></point>
+                <point><first>6.7</first><second>0.1299</second></point>
+                <point><first>16.7</first><second>0.2008</second></point>
+                <point><first>33.3</first><second>0.3307</second></point>
+                <point><first>66.7</first><second>0.3701</second></point>
+                <point><first>166.7</first><second>0.3858</second></point>
+                <point><first>541.7</first><second>0.4173</second></point>
+                <point><first>2083.3</first><second>0.5512</second></point>
+                <point><first>5833.3</first><second>0.7717</second></point>
+                <point><first>8333.3</first><second>0.8228</second></point>
+                <point><first>16666.7</first><second>0.8622</second></point>
+                <point><first>33333.3</first><second>0.8819</second></point>
+                <point><first>50000.0</first><second>0.9016</second></point>
+                <point><first>333333.3</first><second>1.0000</second></point>
+            </map>
+        </luxToBrightnessMapping>
     </autoBrightness>
+
+    <lightSensor>
+        <type>com.motorola.sensor.alternate_light</type>
+        <name>stk_stk3bfx Alt Ambient Light Sensor Non-wakeup</name>
+    </lightSensor>
 
     <densityMapping>
         <density>
