@@ -30,4 +30,10 @@
          360 to 460 dpi. Each panel now keeps its own size; WindowManager stores it by
          the panel's unique id. -->
     <bool name="config_display_size_per_display">true</bool>
+
+    <!-- arcfox: the same idea upstream (LineageOS 396c9de7de9, 2026-09-16): the Display size
+         slider changes only the default display and takes its min/max from that display.
+         The fork's flag above still covers what upstream does not: the accessibility
+         "Display size and text" page and the Display settings summary. -->
+    <bool name="config_independent_display_dpi_setting">true</bool>
 </resources>
