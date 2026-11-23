@@ -1,4 +1,9 @@
 #
+# SPDX-FileCopyrightText: 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+#
 # BoardConfig for Motorola razr 50 ultra / razr+ 2024 (arcfox), XT2451-3.
 # Measured on W1UXS36H.72-45-10-7 (Android 16), channel reteu.
 #

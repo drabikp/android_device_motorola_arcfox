@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<!--
     SystemUI corner padding for arcfox (Razr 50 Ultra).
 
       rounded_corner_content_padding  the horizontal padding SystemUI applies to

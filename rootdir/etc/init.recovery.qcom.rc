@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
 # Recovery-mode USB gadget bring-up for arcfox.
 #
 # Without this, recovery boots and renders but never enumerates on USB, so

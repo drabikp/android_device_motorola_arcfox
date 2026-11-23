@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <!-- arcfox cover display only (values-notlong, see dimens.xml here). The cover is
      565dp tall and shares the inner panel's 4x5 grid, so Launcher3 scales the
      workspace down to fit (0.57 with the dock lifted above the camera block) and,

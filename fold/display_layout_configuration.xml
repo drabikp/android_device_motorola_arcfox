@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<!--
     Display layout for motorola arcfox (Razr 50 Ultra / Razr+ 2024).
 
     AUTHORED, not adapted. Two reasons this file could not be copied from

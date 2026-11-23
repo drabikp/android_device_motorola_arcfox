@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<!--
     Foldable framework config for motorola arcfox (Razr 50 Ultra / Razr+ 2024).
 
     Why this file exists even though fold/device_state_configuration.xml already

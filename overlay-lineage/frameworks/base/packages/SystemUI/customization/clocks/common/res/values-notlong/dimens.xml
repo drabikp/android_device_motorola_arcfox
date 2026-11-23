@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <!-- arcfox cover display only (see ../../../../../res/values-notlong/dimens.xml).
      The lock icon's bottom margin is 74dp (166px) upstream, i.e. inside the camera
      block's rows; the indication text sits below it. Raise the icon so it stays

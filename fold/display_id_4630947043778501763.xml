@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<!--
     INNER display, motorola arcfox (Razr 50 Ultra / Razr+ 2024).
 
     local:4630947043778501763  port 131  1080x2640  density 420

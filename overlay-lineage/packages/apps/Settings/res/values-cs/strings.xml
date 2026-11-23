@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <resources>
     <string name="security_settings_face_enroll_education_message">Držte telefon ve výšce očí, přibližně na délku paže, a umístěte obličej do kruhu. Až k tomu budete vyzváni, pomalu otáčejte hlavou.</string>
 </resources>

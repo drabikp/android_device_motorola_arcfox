@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
 # Device makefile for Motorola razr 50 ultra / razr+ 2024 (arcfox).
 
 LOCAL_PATH := device/motorola/arcfox

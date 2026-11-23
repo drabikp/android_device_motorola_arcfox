@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <!-- arcfox: values-notlong selects the COVER display only (aspect 1.18; the inner
      panel is 2.44, "long"), at any display size. It replaced values-sw430dp, which
      moved with density: see Launcher3's values-notlong/dimens.xml in this overlay.

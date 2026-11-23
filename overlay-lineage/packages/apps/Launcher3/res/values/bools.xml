@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <!-- arcfox: enable Launcher3's IME-only bottom inset override device-wide. The
      SIZE of the override is per panel (values-notlong/dimens.xml gives the cover
      277px; the inner panel keeps the default 0dp, which makes the entry repeat the

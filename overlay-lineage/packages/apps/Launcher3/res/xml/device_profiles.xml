@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<!--
     arcfox overlay of Launcher3's device_profiles.xml.
 
     THE ONLY CHANGE IS THAT THE 3_by_3 grid-option IS DELETED. Everything else is

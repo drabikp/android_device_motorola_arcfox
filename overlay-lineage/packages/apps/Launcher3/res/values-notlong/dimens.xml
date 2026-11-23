@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
 <!-- arcfox: values-notlong is a COVER-DISPLAY-ONLY qualifier on this device. The
      cover panel is 1080x1272 (aspect 1.18, "notlong"), the inner panel 1080x2640
      (aspect 2.44, "long"), in both orientations and AT ANY DENSITY. The camera block
